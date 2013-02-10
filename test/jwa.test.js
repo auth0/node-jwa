@@ -4,7 +4,7 @@ const fs = require('fs');
 const test = require('tap').test;
 const jwa = require('..');
 
-// this key files will be generated as part of `make test`
+// these key files will be generated as part of `make test`
 const rsaPrivateKey = fs.readFileSync(__dirname + '/rsa-private.pem').toString();
 const rsaPublicKey = fs.readFileSync(__dirname + '/rsa-public.pem').toString();
 const rsaWrongPublicKey = fs.readFileSync(__dirname + '/rsa-wrong-public.pem').toString();
