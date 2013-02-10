@@ -1,4 +1,4 @@
-# node-jwa
+# node-jwa [![Build Status](https://travis-ci.org/brianloveswords/node-jwa.png?branch=master)](https://travis-ci.org/brianloveswords/node-jwa)
 
 A
 [JSON Web Algorithms](http://tools.ietf.org/id/draft-ietf-jose-json-web-algorithms-08.html)
