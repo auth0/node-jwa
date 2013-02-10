@@ -122,26 +122,64 @@ test('jwa: es512', function (t) {
   t.end();
 });
 
-test('jwa: es512 interop', {skip: true}, function (t) {
+
+test('jwa: es256 -> openssl interop', function (t) {
   const input = 'strawberry';
-  const bitLengths = ['256', '384', '512'];
-  bitLengths.forEach(function (bits) {
-    const algo = jwa('es512');
-    const dgst = spawn('openssl', ['dgst', '-sha512', '-sign', __dirname + '/ec512-private.pem']);
-    dgst.stdin.end(input);
-    var buffer = Buffer(0);
-    dgst.stdout.on('data', function (buf) {
-      buffer = Buffer.concat([buffer, buf]);
-    });
-    dgst.on('exit', function (code) {
-      if (code !== 0)
-        return t.fail('could not test interop: openssl failure');
-      const base64sig = buffer.toString('base64');
-      const sig = base64url.fromBase64(base64sig);
-      t.ok(algo.verify(input, sig, es512PublicKey), 'should verify');
-      t.notOk(algo.verify(input, sig, es512WrongPublicKey), 'should not verify');
-      t.end();
-    });
+  const algo = jwa('es256');
+  const dgst = spawn('openssl', ['dgst', '-sha256', '-sign', __dirname + '/ec256-private.pem']);
+  var buffer = Buffer(0);
+  dgst.stdin.end(input);
+  dgst.stdout.on('data', function (buf) {
+    buffer = Buffer.concat([buffer, buf]);
+  });
+  dgst.on('exit', function (code) {
+    if (code !== 0)
+      return t.fail('could not test interop: openssl failure');
+    const base64sig = buffer.toString('base64');
+    const sig = base64url.fromBase64(base64sig);
+    t.ok(algo.verify(input, sig, ecdsaPublicKey['256']), 'should verify');
+    t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey['256']), 'should not verify');
+    t.end();
+  });
+});
+
+test('jwa: es384 -> openssl interop', function (t) {
+  const input = 'strawberry';
+  const algo = jwa('es384');
+  const dgst = spawn('openssl', ['dgst', '-sha384', '-sign', __dirname + '/ec384-private.pem']);
+  var buffer = Buffer(0);
+  dgst.stdin.end(input);
+  dgst.stdout.on('data', function (buf) {
+    buffer = Buffer.concat([buffer, buf]);
+  });
+  dgst.on('exit', function (code) {
+    if (code !== 0)
+      return t.fail('could not test interop: openssl failure');
+    const base64sig = buffer.toString('base64');
+    const sig = base64url.fromBase64(base64sig);
+    t.ok(algo.verify(input, sig, ecdsaPublicKey['384']), 'should verify');
+    t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey['384']), 'should not verify');
+    t.end();
+  });
+});
+
+test('jwa: es512 -> openssl interop', function (t) {
+  const input = 'strawberry';
+  const algo = jwa('es512');
+  const dgst = spawn('openssl', ['dgst', '-sha512', '-sign', __dirname + '/ec512-private.pem']);
+  var buffer = Buffer(0);
+  dgst.stdin.end(input);
+  dgst.stdout.on('data', function (buf) {
+    buffer = Buffer.concat([buffer, buf]);
+  });
+  dgst.on('exit', function (code) {
+    if (code !== 0)
+      return t.fail('could not test interop: openssl failure');
+    const base64sig = buffer.toString('base64');
+    const sig = base64url.fromBase64(base64sig);
+    t.ok(algo.verify(input, sig, ecdsaPublicKey['512']), 'should verify');
+    t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey['512']), 'should not verify');
+    t.end();
   });
 });
 
