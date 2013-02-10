@@ -20,14 +20,14 @@ ES384 | ECDSA using P-384 curve and SHA-384 hash algorithm
 ES512 | ECDSA using P-521 curve and SHA-512 hash algorithm
 none | No digital signature or MAC value included
 
-## Requirements
+# Requirements
 
 In order to run the tests, a recent version of OpenSSL is
 required. **The version that comes with OS X (OpenSSL 0.9.8r 8 Feb
 2011) is not recent enough**, as it does not fully support ECDSA
 keys. You'll need to use a version > 1.0.0; I tested with OpenSSL 1.0.1c 10 May 2012.
 
-## Testing
+# Testing
 
 To run the tests, do
 
@@ -38,14 +38,15 @@ $ npm test
 This will generate a bunch of keypairs to use in testing. If you want to
 generate new keypairs, do `make clean` before running `npm test` again.
 
-### Methodology
+## Methodology
 
-To test interoperability, some tests spawn `openssl dgst -sha[bits] -sign [keyfile]`
-to generate the signature and verify it using `jwa#verify`.
+I spawn `openssl dgst -sign` to test OpenSSL sign → JS verify and
+`openssl dgst -verify` to test JS sign → OpenSSL verify for each of the
+RSA and ECDSA algorithms.
 
-## Usage
+# Usage
 
-### jwa(algorithm)
+## jwa(algorithm)
 
 Creates a new `jwa` object with `sign` and `verify` methods for the
 algorithm. Valid values for algorithm can be found in the table above
@@ -54,7 +55,7 @@ algorithm value will throw a `TypeError`.
 
 ----------------------------------------------------------
 
-### jwa#sign(input, secretOrPrivateKey)
+## jwa#sign(input, secretOrPrivateKey)
 
 Sign some input with either a secret for HMAC algorithms, or a private
 key for RSA and ECDSA algorithms.
@@ -76,7 +77,7 @@ to decode the signature.
 
 --------------------------------------------------------------
 
-### jwa#verify(input, signature, secretOrPublicKey)
+## jwa#verify(input, signature, secretOrPublicKey)
 
 Verify a signature. Returns `true` or `false`.
 
@@ -89,7 +90,7 @@ PEM encoded **public** key.
 
 --------------------------------------------------------------
 
-## Example
+# Example
 
 HMAC
 ```js
