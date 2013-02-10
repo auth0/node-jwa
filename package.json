@@ -1,13 +1,13 @@
 {
   "name": "jwa",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "JWA implementation (supports all JWS algorithms)",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "base64url": "~0.0.3"
+    "base64url": "~0.0.4"
   },
   "devDependencies": {
     "tap": "~0.3.3"

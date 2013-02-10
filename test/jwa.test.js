@@ -1,3 +1,4 @@
+const path = require('path');
 const base64url = require('base64url');
 const spawn = require('child_process').spawn;
 const fs = require('fs');
@@ -51,7 +52,7 @@ test('RSA signing, verifying', function (t) {
 });
 
 BIT_DEPTHS.forEach(function (bits) {
-  test('jwa: rs'+bits+' <-> openssl interop', function (t) {
+  test('RS'+bits+': openssl sign -> js verify', function (t) {
     const input = 'iodine';
     const algo = jwa('rs'+bits);
     const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/rsa-private.pem']);
@@ -84,7 +85,7 @@ test('ECDSA signing, verifying', function (t) {
 });
 
 BIT_DEPTHS.forEach(function (bits) {
-  test('jwa: es'+bits+' <-> openssl interop', function (t) {
+  test('ES'+bits+': openssl sign -> js verify', function (t) {
     const input = 'strawberry';
     const algo = jwa('es'+bits);
     const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/ec'+bits+'-private.pem']);
@@ -104,6 +105,79 @@ BIT_DEPTHS.forEach(function (bits) {
     });
   });
 });
+
+BIT_DEPTHS.forEach(function (bits) {
+  const input = 'bob\'s';
+  const inputFile = path.join(__dirname, 'interop.input.txt');
+  const signatureFile = path.join(__dirname, 'interop.sig.txt');
+
+  function opensslVerify(keyfile) {
+    return spawn('openssl', [
+      'dgst',
+      '-sha'+bits,
+      '-verify', keyfile,
+      '-signature', signatureFile,
+      inputFile
+    ]);
+  }
+
+  test('ES'+bits+': js sign -> openssl verify', function (t) {
+    const publicKeyFile = path.join(__dirname, 'ec'+bits+'-public.pem');
+    const wrongPublicKeyFile = path.join(__dirname, 'ec'+bits+'-wrong-public.pem');
+    const privateKey = ecdsaPrivateKey[bits];
+    const signature =
+      base64url.toBuffer(
+        jwa('es'+bits).sign(input, privateKey)
+      );
+    fs.writeFileSync(inputFile, input);
+    fs.writeFileSync(signatureFile, signature);
+
+    t.plan(2);
+    opensslVerify(publicKeyFile).on('exit', function (code) {
+      t.same(code, 0, 'should be a successful exit');
+    });
+    opensslVerify(wrongPublicKeyFile).on('exit', function (code) {
+      t.same(code, 1, 'should be invalid');
+    });
+  });
+});
+
+BIT_DEPTHS.forEach(function (bits) {
+  const input = 'burgers';
+  const inputFile = path.join(__dirname, 'interop.input.txt');
+  const signatureFile = path.join(__dirname, 'interop.sig.txt');
+
+  function opensslVerify(keyfile) {
+    return spawn('openssl', [
+      'dgst',
+      '-sha'+bits,
+      '-verify', keyfile,
+      '-signature', signatureFile,
+      inputFile
+    ]);
+  }
+
+  test('RS'+bits+': js sign -> openssl verify', function (t) {
+    const publicKeyFile = path.join(__dirname, 'rsa-public.pem');
+    const wrongPublicKeyFile = path.join(__dirname, 'rsa-wrong-public.pem');
+    const privateKey = rsaPrivateKey;
+    const signature =
+      base64url.toBuffer(
+        jwa('rs'+bits).sign(input, privateKey)
+      );
+    fs.writeFileSync(signatureFile, signature);
+    fs.writeFileSync(inputFile, input);
+
+    t.plan(2);
+    opensslVerify(publicKeyFile).on('exit', function (code) {
+      t.same(code, 0, 'should be a successful exit');
+    });
+    opensslVerify(wrongPublicKeyFile).on('exit', function (code) {
+      t.same(code, 1, 'should be invalid');
+    });
+  });
+});
+
 
 test('jwa: none', function (t) {
   const input = 'whatever';
