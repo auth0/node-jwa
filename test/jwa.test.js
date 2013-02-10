@@ -24,83 +24,40 @@ const ecdsaWrongPublicKey = {
   '512': fs.readFileSync(__dirname + '/ec512-wrong-public.pem').toString(),
 };
 
-test('jwa: hs256', function (t) {
+const BIT_DEPTHS = ['256', '384', '512'];
+
+test('HMAC signing, verifying', function (t) {
   const input = 'eugene mirman';
   const secret = 'shhhhhhhhhh';
-  const algo = jwa('hs256');
-  const sig = algo.sign(input, secret);
-  t.ok(algo.verify(input, sig, secret), 'should verify');
-  t.notOk(algo.verify(input, 'other sig', secret), 'should verify');
-  t.notOk(algo.verify(input, sig, 'incrorect'), 'shoud not verify');
+  BIT_DEPTHS.forEach(function (bits) {
+    const algo = jwa('hs'+bits);
+    const sig = algo.sign(input, secret);
+    t.ok(algo.verify(input, sig, secret), 'should verify');
+    t.notOk(algo.verify(input, 'other sig', secret), 'should verify');
+    t.notOk(algo.verify(input, sig, 'incrorect'), 'shoud not verify');
+  });
   t.end();
 });
 
-test('jwa: hs384', function (t) {
-  const input = 'john mullaney';
-  const secret = 'shhhhhhhhhh';
-  const algo = jwa('hs384');
-  const sig = algo.sign(input, secret);
-  t.ok(algo.verify(input, sig, secret), 'should verify');
-  t.notOk(algo.verify(input, 'other sig', secret), 'should verify');
-  t.notOk(algo.verify(input, sig, 'incrorect'), 'shoud not verify');
-  t.end();
-});
-
-test('jwa: hs512', function (t) {
-  const input = 'wyatt cenac';
-  const secret = 'shhhhhhhhhh';
-  const algo = jwa('hs512');
-  const sig = algo.sign(input, secret);
-  t.ok(algo.verify(input, sig, secret), 'should verify');
-  t.notOk(algo.verify(input, 'other sig', secret), 'should verify');
-  t.notOk(algo.verify(input, sig, 'incrorect'), 'shoud not verify');
-  t.end();
-});
-
-test('jwa: hs512, case-insensitive', function (t) {
-  const input = 'mike birbiglia';
-  const secret = 'shhhhhhhhhh';
-  const algo = jwa('HS512');
-  const sig = algo.sign(input, secret);
-  t.ok(algo.verify(input, sig, secret), 'should verify');
-  t.notOk(algo.verify(input, 'other sig', secret), 'should verify');
-  t.notOk(algo.verify(input, sig, 'incrorect'), 'shoud not verify');
-  t.end();
-});
-
-test('jwa: rs256', function (t) {
+test('RSA signing, verifying', function (t) {
   const input = 'h. jon benjamin';
-  const algo = jwa('rs256');
-  const sig = algo.sign(input, rsaPrivateKey);
-  t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
-  t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'shoud not verify');
+  BIT_DEPTHS.forEach(function (bits) {
+    const algo = jwa('rs'+bits);
+    const sig = algo.sign(input, rsaPrivateKey);
+    t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
+    t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'shoud not verify');
+  });
   t.end();
 });
 
-test('jwa: rs384', function (t) {
-  const input = 'todd barry';
-  const algo = jwa('rs384');
-  const sig = algo.sign(input, rsaPrivateKey);
-  t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
-  t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'shoud not verify');
-  t.end();
-});
-
-test('jwa: rs512', function (t) {
-  const input = 'david cross';
-  const algo = jwa('rs512');
-  const sig = algo.sign(input, rsaPrivateKey);
-  t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
-  t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'shoud not verify');
-  t.end();
-});
-
-test('jwa: es256', function (t) {
-  const algo = jwa('es256');
-  const input = 'strawberry';
-  const sig = algo.sign(input, ecdsaPrivateKey['256']);
-  t.ok(algo.verify(input, sig, ecdsaPublicKey['256']), 'should verify');
-  t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey['256']), 'should not verify');
+test('ECDSA signing, verifying', function (t) {
+  const input = 'kristen schaal';
+  BIT_DEPTHS.forEach(function (bits) {
+    const algo = jwa('es'+bits);
+    const sig = algo.sign(input, ecdsaPrivateKey[bits]);
+    t.ok(algo.verify(input, sig, ecdsaPublicKey[bits]), 'should verify');
+    t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey[bits]), 'should not verify');
+  });
   t.end();
 });
 
