@@ -61,25 +61,6 @@ test('ECDSA signing, verifying', function (t) {
   t.end();
 });
 
-test('jwa: es384', function (t) {
-  const algo = jwa('es384');
-  const input = 'strawberry';
-  const sig = algo.sign(input, ecdsaPrivateKey['384']);
-  t.ok(algo.verify(input, sig, ecdsaPublicKey['384']), 'should verify');
-  t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey['384']), 'should not verify');
-  t.end();
-});
-
-test('jwa: es512', function (t) {
-  const algo = jwa('es512');
-  const input = 'strawberry';
-  const sig = algo.sign(input, ecdsaPrivateKey['512']);
-  t.ok(algo.verify(input, sig, ecdsaPublicKey['512']), 'should verify');
-  t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey['512']), 'should not verify');
-  t.end();
-});
-
-
 test('jwa: es256 -> openssl interop', function (t) {
   const input = 'strawberry';
   const algo = jwa('es256');
