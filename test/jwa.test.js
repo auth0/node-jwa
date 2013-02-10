@@ -50,6 +50,28 @@ test('RSA signing, verifying', function (t) {
   t.end();
 });
 
+BIT_DEPTHS.forEach(function (bits) {
+  test('jwa: rs'+bits+' <-> openssl interop', function (t) {
+    const input = 'iodine';
+    const algo = jwa('rs'+bits);
+    const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/rsa-private.pem']);
+    var buffer = Buffer(0);
+    dgst.stdin.end(input);
+    dgst.stdout.on('data', function (buf) {
+      buffer = Buffer.concat([buffer, buf]);
+    });
+    dgst.on('exit', function (code) {
+      if (code !== 0)
+        return t.fail('could not test interop: openssl failure');
+      const base64sig = buffer.toString('base64');
+      const sig = base64url.fromBase64(base64sig);
+      t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
+      t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'should not verify');
+      t.end();
+    });
+  });
+});
+
 test('ECDSA signing, verifying', function (t) {
   const input = 'kristen schaal';
   BIT_DEPTHS.forEach(function (bits) {
