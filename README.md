@@ -7,11 +7,11 @@ implementation focusing (exclusively, at this point) on the algorithms necessary
 
 This library supports all of the required, recommended and optional cryptographic algorithms for JWS:
 
-alg Parameter Value | Digital Signature or MAC Algorithm 
+alg Parameter Value | Digital Signature or MAC Algorithm
 ----------------|----------------------------
-HS256 | HMAC using SHA-256 hash algorithm 
-HS384 | HMAC using SHA-384 hash algorithm 
-HS512 | HMAC using SHA-512 hash algorithm 
+HS256 | HMAC using SHA-256 hash algorithm
+HS384 | HMAC using SHA-384 hash algorithm
+HS512 | HMAC using SHA-512 hash algorithm
 RS256 | RSASSA using SHA-256 hash algorithm
 RS384 | RSASSA using SHA-384 hash algorithm
 RS512 | RSASSA using SHA-512 hash algorithm
@@ -92,7 +92,7 @@ HMAC
 ```js
 const jwa = require('jwa');
 
-const hmac = jwa('hs256');
+const hmac = jwa('HS256');
 const input = 'super important stuff';
 const secret = 'shhhhhh';
 
@@ -108,7 +108,7 @@ const jwa = require('jwa');
 const privateKey = fs.readFileSync(__dirname + '/ecdsa-p521-private.pem');
 const publicKey = fs.readFileSync(__dirname + '/ecdsa-p521-public.pem');
 
-const ecdsa = jwa('es512'); 
+const ecdsa = jwa('ES512');
 const input = 'very important stuff';
 
 const signature = ecdsa.sign(input, privateKey);
