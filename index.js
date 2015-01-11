@@ -1,3 +1,4 @@
+const bufferEqual = require('buffer-equal-constant-time');
 const base64url = require('base64url');
 const crypto = require('crypto');
 const util = require('util');
@@ -36,7 +37,7 @@ function createHmacSigner(bits) {
 function createHmacVerifier(bits) {
   return function verify(thing, signature, secret) {
     const computedSig = createHmacSigner(bits)(thing, secret);
-    return signature === computedSig;
+    return bufferEqual(Buffer(signature), Buffer(computedSig));
   }
 }
 
@@ -46,7 +47,7 @@ function createKeySigner(bits) {
       throw typeError(MSG_INVALID_KEY);
     thing = normalizeInput(thing);
     // Even though we are specifying "RSA" here, this works with ECDSA
-    // keys as well. 
+    // keys as well.
     const signer = crypto.createSign('RSA-SHA' + bits);
     const sig = (signer.update(thing), signer.sign(privateKey, 'base64'));
     return base64url.fromBase64(sig);
