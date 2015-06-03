@@ -28,7 +28,7 @@ function createHmacSigner(bits) {
     if (!bufferOrString(secret))
       throw typeError(MSG_INVALID_SECRET);
     thing = normalizeInput(thing);
-    const hmac = crypto.createHmac('SHA' + bits, secret);
+    const hmac = crypto.createHmac('sha' + bits, secret);
     const sig = (hmac.update(thing), hmac.digest('base64'))
     return base64url.fromBase64(sig);
   }
