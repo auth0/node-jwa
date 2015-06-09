@@ -1,6 +1,7 @@
 const bufferEqual = require('buffer-equal-constant-time');
 const base64url = require('base64url');
 const crypto = require('crypto');
+const formatEcdsa = require('ecdsa-sig-formatter');
 const util = require('util');
 
 const MSG_INVALID_ALGORITHM = '"%s" is not a valid algorithm.\n  Supported algorithms are:\n  "HS256", "HS384", "HS512", "RS256", "RS384", "RS512" and "none".'
@@ -66,6 +67,24 @@ function createKeyVerifier(bits) {
   }
 }
 
+function createECDSASigner(bits) {
+  const inner = createKeySigner(bits);
+  return function sign() {
+    var signature = inner.apply(null, arguments);
+    signature = formatEcdsa.derToJose(signature, 'ES' + bits);
+    return signature;
+  };
+}
+
+function createECDSAVerifer(bits) {
+  const inner = createKeyVerifier(bits);
+  return function verify(thing, signature, publicKey) {
+    signature = formatEcdsa.joseToDer(signature, 'ES' + bits).toString('base64');
+    const result = inner(thing, signature, publicKey);
+    return result;
+  };
+}
+
 function createNoneSigner() {
   return function sign() {
     return '';
@@ -82,13 +101,13 @@ module.exports = function jwa(algorithm) {
   const signerFactories = {
     hs: createHmacSigner,
     rs: createKeySigner,
-    es: createKeySigner,
+    es: createECDSASigner,
     none: createNoneSigner,
   }
   const verifierFactories = {
     hs: createHmacVerifier,
     rs: createKeyVerifier,
-    es: createKeyVerifier,
+    es: createECDSAVerifer,
     none: createNoneVerifier,
   }
   const match = algorithm.match(/(RS|ES|HS|none)(256|384|512)?/i);
