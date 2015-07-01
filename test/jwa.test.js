@@ -1,5 +1,6 @@
 const path = require('path');
 const base64url = require('base64url');
+const formatEcdsa = require('ecdsa-sig-formatter');
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 const test = require('tap').test;
@@ -73,15 +74,15 @@ BIT_DEPTHS.forEach(function (bits) {
   });
 });
 
-test('ECDSA signing, verifying', function (t) {
-  const input = 'kristen schaal';
-  BIT_DEPTHS.forEach(function (bits) {
+BIT_DEPTHS.forEach(function (bits) {
+  test('ES'+bits+': signing, verifying', function (t) {
+    const input = 'kristen schaal';
     const algo = jwa('es'+bits);
     const sig = algo.sign(input, ecdsaPrivateKey[bits]);
     t.ok(algo.verify(input, sig, ecdsaPublicKey[bits]), 'should verify');
     t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey[bits]), 'should not verify');
+    t.end();
   });
-  t.end();
 });
 
 BIT_DEPTHS.forEach(function (bits) {
@@ -97,8 +98,7 @@ BIT_DEPTHS.forEach(function (bits) {
     dgst.on('exit', function (code) {
       if (code !== 0)
         return t.fail('could not test interop: openssl failure');
-      const base64sig = buffer.toString('base64');
-      const sig = base64url.fromBase64(base64sig);
+      const sig = formatEcdsa.derToJose(buffer, 'ES' + bits);
       t.ok(algo.verify(input, sig, ecdsaPublicKey[bits]), 'should verify');
       t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey[bits]), 'should not verify');
       t.end();
@@ -126,8 +126,9 @@ BIT_DEPTHS.forEach(function (bits) {
     const wrongPublicKeyFile = path.join(__dirname, 'ec'+bits+'-wrong-public.pem');
     const privateKey = ecdsaPrivateKey[bits];
     const signature =
-      base64url.toBuffer(
-        jwa('es'+bits).sign(input, privateKey)
+      formatEcdsa.joseToDer(
+        jwa('es'+bits).sign(input, privateKey),
+        'ES' + bits
       );
     fs.writeFileSync(inputFile, input);
     fs.writeFileSync(signatureFile, signature);
