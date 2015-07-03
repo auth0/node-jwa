@@ -9,6 +9,8 @@ const jwa = require('..');
 // these key files will be generated as part of `make test`
 const rsaPrivateKey = fs.readFileSync(__dirname + '/rsa-private.pem').toString();
 const rsaPublicKey = fs.readFileSync(__dirname + '/rsa-public.pem').toString();
+const rsaPrivateKeyWithPassphrase = fs.readFileSync(__dirname + '/rsa-passphrase-private.pem').toString();
+const rsaPublicKeyWithPassphrase = fs.readFileSync(__dirname + '/rsa-passphrase-public.pem').toString();
 const rsaWrongPublicKey = fs.readFileSync(__dirname + '/rsa-wrong-public.pem').toString();
 const ecdsaPrivateKey = {
   '256': fs.readFileSync(__dirname + '/ec256-private.pem').toString(),
@@ -51,6 +53,18 @@ test('RSA signing, verifying', function (t) {
   });
   t.end();
 });
+
+test('RSA with passphrase signing, verifying', function (t) {
+  const input = 'test input';
+  BIT_DEPTHS.forEach(function (bits) {
+    const algo = jwa('rs'+bits);
+    const secret = 'test_pass';
+    const sig = algo.sign(input, {key: rsaPrivateKeyWithPassphrase, passphrase: secret});
+    t.ok(algo.verify(input, sig, rsaPublicKeyWithPassphrase), 'should verify');
+  });
+  t.end();
+});
+
 
 BIT_DEPTHS.forEach(function (bits) {
   test('RS'+bits+': openssl sign -> js verify', function (t) {

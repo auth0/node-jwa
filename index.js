@@ -6,7 +6,7 @@ const util = require('util');
 
 const MSG_INVALID_ALGORITHM = '"%s" is not a valid algorithm.\n  Supported algorithms are:\n  "HS256", "HS384", "HS512", "RS256", "RS384", "RS512" and "none".'
 const MSG_INVALID_SECRET = 'secret must be a string or buffer';
-const MSG_INVALID_KEY = 'key must be a string or buffer';
+const MSG_INVALID_KEY = 'key must be a string, a buffer or an object';
 
 function typeError(template) {
   const args = [].slice.call(arguments, 1);
@@ -43,8 +43,8 @@ function createHmacVerifier(bits) {
 }
 
 function createKeySigner(bits) {
-  return function sign(thing, privateKey) {
-    if (!bufferOrString(privateKey))
+ return function sign(thing, privateKey) {
+    if (!bufferOrString(privateKey) && !(typeof privateKey === 'object'))
       throw typeError(MSG_INVALID_KEY);
     thing = normalizeInput(thing);
     // Even though we are specifying "RSA" here, this works with ECDSA
@@ -57,7 +57,7 @@ function createKeySigner(bits) {
 
 function createKeyVerifier(bits) {
   return function verify(thing, signature, publicKey) {
-    if (!bufferOrString(publicKey))
+    if (!bufferOrString(publicKey) && !(typeof publicKey === 'oject'))
       throw typeError(MSG_INVALID_KEY);
     thing = normalizeInput(thing);
     signature = base64url.toBase64(signature);

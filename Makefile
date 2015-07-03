@@ -7,8 +7,10 @@ test: test/keys
 test/keys:
 	@openssl genrsa 2048 > test/rsa-private.pem
 	@openssl genrsa 2048 > test/rsa-wrong-private.pem
+	@openssl genrsa 2048 -passout pass:test_pass > test/rsa-passphrase-private.pem
 	@openssl rsa -in test/rsa-private.pem -pubout > test/rsa-public.pem
 	@openssl rsa -in test/rsa-wrong-private.pem -pubout > test/rsa-wrong-public.pem
+	@openssl rsa -in test/rsa-passphrase-private.pem -pubout -passin pass:test_pass > test/rsa-passphrase-public.pem
 	@openssl ecparam -out test/ec256-private.pem -name prime256v1 -genkey
 	@openssl ecparam -out test/ec256-wrong-private.pem -name secp256k1 -genkey
 	@openssl ecparam -out test/ec384-private.pem -name secp384r1 -genkey
