@@ -57,7 +57,7 @@ function createKeySigner(bits) {
 
 function createKeyVerifier(bits) {
   return function verify(thing, signature, publicKey) {
-    if (!bufferOrString(publicKey) && !(typeof publicKey === 'oject'))
+    if (!bufferOrString(publicKey))
       throw typeError(MSG_INVALID_KEY);
     thing = normalizeInput(thing);
     signature = base64url.toBase64(signature);
