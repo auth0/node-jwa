@@ -74,15 +74,8 @@ the meantime, you can use
 [brianloveswords/base64url](https://github.com/brianloveswords/base64url)
 to decode the signature.
 
-As of nodejs `v0.11.8`, SPKAC support was introduce. If your node
-version satisfies, then you can pass an object 
-
-```javascript
-{
-		key: '..',
-		passphrase: '...'
-}
-```
+As of nodejs *v0.11.8*, SPKAC support was introduce. If your nodeJs
+version satisfies, then you can pass an object `{ key: '..', passphrase: '...' }`
 
 
 ## jwa#verify(input, signature, secretOrPublicKey)

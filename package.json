@@ -12,6 +12,7 @@
     "ecdsa-sig-formatter": "^1.0.0"
   },
   "devDependencies": {
+    "semver": "^4.3.6",
     "tap": "~0.3.3"
   },
   "scripts": {

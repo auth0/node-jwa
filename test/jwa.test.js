@@ -2,9 +2,12 @@ const path = require('path');
 const base64url = require('base64url');
 const formatEcdsa = require('ecdsa-sig-formatter');
 const spawn = require('child_process').spawn;
+const semver = require('semver');
 const fs = require('fs');
 const test = require('tap').test;
 const jwa = require('..');
+
+const nodeVersion = semver.clean(process.version);
 
 // these key files will be generated as part of `make test`
 const rsaPrivateKey = fs.readFileSync(__dirname + '/rsa-private.pem').toString();
@@ -54,7 +57,9 @@ test('RSA signing, verifying', function (t) {
   t.end();
 });
 
-test('RSA with passphrase signing, verifying', function (t) {
+// run only on nodejs version >= 0.11.8 
+if (semver.gte(nodeVersion, '0.11.8')) {
+  test('RSA with passphrase signing, verifying', function (t) {
   const input = 'test input';
   BIT_DEPTHS.forEach(function (bits) {
     const algo = jwa('rs'+bits);
@@ -63,7 +68,8 @@ test('RSA with passphrase signing, verifying', function (t) {
     t.ok(algo.verify(input, sig, rsaPublicKeyWithPassphrase), 'should verify');
   });
   t.end();
-});
+  });
+}
 
 
 BIT_DEPTHS.forEach(function (bits) {
