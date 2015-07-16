@@ -63,8 +63,8 @@ If input is not already a string or buffer, `JSON.stringify` will be
 called on it to attempt to coerce it.
 
 For the HMAC algorithm, `secretOrPrivateKey` should be a string or a
-buffer. For ECDSA and RSA, the value should be a string represented a
-PEM encoded **private** key.
+buffer. For ECDSA and RSA, the value should be a string representing a
+PEM encoded **private** key. 
 
 Output [base64url](http://en.wikipedia.org/wiki/Base64#URL_applications)
 formatted. This is for convenience as JWS expects the signature in this
@@ -73,6 +73,9 @@ format. If your application needs the output in a different format,
 the meantime, you can use
 [brianloveswords/base64url](https://github.com/brianloveswords/base64url)
 to decode the signature.
+
+As of nodejs *v0.11.8*, SPKAC support was introduce. If your nodeJs
+version satisfies, then you can pass an object `{ key: '..', passphrase: '...' }`
 
 
 ## jwa#verify(input, signature, secretOrPublicKey)

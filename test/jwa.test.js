@@ -2,13 +2,18 @@ const path = require('path');
 const base64url = require('base64url');
 const formatEcdsa = require('ecdsa-sig-formatter');
 const spawn = require('child_process').spawn;
+const semver = require('semver');
 const fs = require('fs');
 const test = require('tap').test;
 const jwa = require('..');
 
+const nodeVersion = semver.clean(process.version);
+
 // these key files will be generated as part of `make test`
 const rsaPrivateKey = fs.readFileSync(__dirname + '/rsa-private.pem').toString();
 const rsaPublicKey = fs.readFileSync(__dirname + '/rsa-public.pem').toString();
+const rsaPrivateKeyWithPassphrase = fs.readFileSync(__dirname + '/rsa-passphrase-private.pem').toString();
+const rsaPublicKeyWithPassphrase = fs.readFileSync(__dirname + '/rsa-passphrase-public.pem').toString();
 const rsaWrongPublicKey = fs.readFileSync(__dirname + '/rsa-wrong-public.pem').toString();
 const ecdsaPrivateKey = {
   '256': fs.readFileSync(__dirname + '/ec256-private.pem').toString(),
@@ -51,6 +56,21 @@ test('RSA signing, verifying', function (t) {
   });
   t.end();
 });
+
+// run only on nodejs version >= 0.11.8 
+if (semver.gte(nodeVersion, '0.11.8')) {
+  test('RSA with passphrase signing, verifying', function (t) {
+  const input = 'test input';
+  BIT_DEPTHS.forEach(function (bits) {
+    const algo = jwa('rs'+bits);
+    const secret = 'test_pass';
+    const sig = algo.sign(input, {key: rsaPrivateKeyWithPassphrase, passphrase: secret});
+    t.ok(algo.verify(input, sig, rsaPublicKeyWithPassphrase), 'should verify');
+  });
+  t.end();
+  });
+}
+
 
 BIT_DEPTHS.forEach(function (bits) {
   test('RS'+bits+': openssl sign -> js verify', function (t) {
