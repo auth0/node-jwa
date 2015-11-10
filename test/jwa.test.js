@@ -220,6 +220,32 @@ test('jwa: some garbage algorithm', function (t) {
   t.end();
 });
 
+['ahs256b', 'anoneb', 'none256', 'rsnone'].forEach(function (superstringAlg) {
+  test('jwa: superstrings of other algorithms', function (t) {
+    try {
+      jwa(superstringAlg);
+      t.fail('should throw');
+    } catch(ex) {
+      t.same(ex.name, 'TypeError');
+      t.ok(ex.message.match(/valid algorithm/), 'should say something about algorithms');
+    }
+    t.end();
+  });
+});
+
+['rs', 'es', 'hs'].forEach(function (partialAlg) {
+  test('jwa: partial strings of other algorithms', function (t) {
+    try {
+      jwa(partialAlg);
+      t.fail('should throw');
+    } catch(ex) {
+      t.same(ex.name, 'TypeError');
+      t.ok(ex.message.match(/valid algorithm/), 'should say something about algorithms');
+    }
+    t.end();
+  });
+});
+
 test('jwa: hs512, missing secret', function (t) {
   const algo = jwa('hs512');
   try {

@@ -111,10 +111,10 @@ module.exports = function jwa(algorithm) {
     es: createECDSAVerifer,
     none: createNoneVerifier,
   }
-  const match = algorithm.match(/(RS|ES|HS|none)(256|384|512)?/i);
+  const match = algorithm.match(/^(RS|ES|HS)(256|384|512)$|^(none)$/i);
   if (!match)
     throw typeError(MSG_INVALID_ALGORITHM, algorithm);
-  const algo = match[1].toLowerCase();
+  const algo = (match[1] || match[3]).toLowerCase();
   const bits = match[2];
 
   return {
