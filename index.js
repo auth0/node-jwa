@@ -1,4 +1,4 @@
-var bufferEqual = require('buffer-equal-varant-time');
+var bufferEqual = require('buffer-equal-constant-time');
 var base64url = require('base64url');
 var crypto = require('crypto');
 var formatEcdsa = require('ecdsa-sig-formatter');
