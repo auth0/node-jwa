@@ -57,7 +57,7 @@ test('RSA signing, verifying', function (t) {
   t.end();
 });
 
-// run only on nodejs version >= 0.11.8 
+// run only on nodejs version >= 0.11.8
 if (semver.gte(nodeVersion, '0.11.8')) {
   test('RSA with passphrase signing, verifying', function (t) {
   const input = 'test input';
@@ -78,15 +78,20 @@ BIT_DEPTHS.forEach(function (bits) {
     const algo = jwa('rs'+bits);
     const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/rsa-private.pem']);
     var buffer = Buffer(0);
-    dgst.stdin.end(input);
+
     dgst.stdout.on('data', function (buf) {
       buffer = Buffer.concat([buffer, buf]);
     });
+
+    dgst.stdin.write(input, function() {
+      dgst.stdin.end();
+    });
+
     dgst.on('exit', function (code) {
       if (code !== 0)
         return t.fail('could not test interop: openssl failure');
-      const base64sig = buffer.toString('base64');
-      const sig = base64url.fromBase64(base64sig);
+      const sig = base64url(buffer);
+
       t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
       t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'should not verify');
       t.end();
@@ -302,4 +307,3 @@ test('jwa: rs512, missing verifying key', function (t) {
   }
   t.end();
 });
-

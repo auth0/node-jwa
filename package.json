@@ -7,13 +7,13 @@
     "test": "test"
   },
   "dependencies": {
-    "base64url": "~1.0.4",
-    "buffer-equal-constant-time": "^1.0.1",
-    "ecdsa-sig-formatter": "^1.0.0"
+    "base64url": "2.0.0",
+    "buffer-equal-constant-time": "1.0.1",
+    "ecdsa-sig-formatter": "1.0.7"
   },
   "devDependencies": {
-    "semver": "^4.3.6",
-    "tap": "~0.3.3"
+    "semver": "4.3.6",
+    "tap": "6.2.0"
   },
   "scripts": {
     "test": "make test"
@@ -30,7 +30,6 @@
     "ecdsa",
     "hmac"
   ],
-  "author": "Brian J. Brennan",
-  "license": "MIT",
-  "gitHead": "5ca1d5182bb64ff15f6f52000fb30a6582a4c8b0"
+  "author": "Brian J. Brennan <brianloveswords@gmail.com>",
+  "license": "MIT"
 }
