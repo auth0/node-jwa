@@ -39,7 +39,7 @@ function createHmacSigner(bits) {
 function createHmacVerifier(bits) {
   return function verify(thing, signature, secret) {
     var computedSig = createHmacSigner(bits)(thing, secret);
-    return bufferEqual(Buffer(signature), Buffer(computedSig));
+    return bufferEqual(new Buffer(signature), new Buffer(computedSig));
   }
 }
 
