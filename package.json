@@ -9,7 +9,8 @@
   "dependencies": {
     "base64url": "2.0.0",
     "buffer-equal-constant-time": "1.0.1",
-    "ecdsa-sig-formatter": "1.0.7"
+    "ecdsa-sig-formatter": "1.0.7",
+    "safe-buffer": "^5.0.1"
   },
   "devDependencies": {
     "semver": "4.3.6",
