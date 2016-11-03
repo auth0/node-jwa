@@ -2,6 +2,7 @@ const path = require('path');
 const base64url = require('base64url');
 const formatEcdsa = require('ecdsa-sig-formatter');
 const spawn = require('child_process').spawn;
+const Buffer = require('safe-buffer').Buffer;
 const semver = require('semver');
 const fs = require('fs');
 const test = require('tap').test;
@@ -77,7 +78,7 @@ BIT_DEPTHS.forEach(function (bits) {
     const input = 'iodine';
     const algo = jwa('rs'+bits);
     const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/rsa-private.pem']);
-    var buffer = Buffer(0);
+    var buffer = Buffer.alloc(0);
 
     dgst.stdout.on('data', function (buf) {
       buffer = Buffer.concat([buffer, buf]);
@@ -115,7 +116,7 @@ BIT_DEPTHS.forEach(function (bits) {
     const input = 'strawberry';
     const algo = jwa('es'+bits);
     const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/ec'+bits+'-private.pem']);
-    var buffer = Buffer(0);
+    var buffer = Buffer.alloc(0);
     dgst.stdin.end(input);
     dgst.stdout.on('data', function (buf) {
       buffer = Buffer.concat([buffer, buf]);

@@ -1,5 +1,6 @@
 var bufferEqual = require('buffer-equal-constant-time');
 var base64url = require('base64url');
+var Buffer = require('safe-buffer').Buffer;
 var crypto = require('crypto');
 var formatEcdsa = require('ecdsa-sig-formatter');
 var util = require('util');
@@ -39,7 +40,7 @@ function createHmacSigner(bits) {
 function createHmacVerifier(bits) {
   return function verify(thing, signature, secret) {
     var computedSig = createHmacSigner(bits)(thing, secret);
-    return bufferEqual(Buffer(signature), Buffer(computedSig));
+    return bufferEqual(Buffer.from(signature), Buffer.from(computedSig));
   }
 }
 
