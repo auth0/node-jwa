@@ -1,5 +1,5 @@
 const path = require('path');
-const base64url = require('base64url');
+const base64url = require('b64u');
 const formatEcdsa = require('ecdsa-sig-formatter');
 const spawn = require('child_process').spawn;
 const Buffer = require('safe-buffer').Buffer;
