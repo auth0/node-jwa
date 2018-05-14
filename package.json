@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "buffer-equal-constant-time": "1.0.1",
-    "ecdsa-sig-formatter": "1.0.9",
+    "ecdsa-sig-formatter": "1.0.10",
     "safe-buffer": "^5.0.1"
   },
   "devDependencies": {
