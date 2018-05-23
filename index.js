@@ -70,9 +70,7 @@ function createKeySigner(bits) {
     if (!bufferOrString(privateKey) && !(typeof privateKey === 'object'))
       throw typeError(MSG_INVALID_SIGNER_KEY);
     thing = normalizeInput(thing);
-    // Even though we are specifying "RSA" here, this works with ECDSA
-    // keys as well.
-    var signer = crypto.createSign('RSA-SHA' + bits);
+    var signer = crypto.createSign('SHA' + bits);
     var sig = (signer.update(thing), signer.sign(privateKey, 'base64'));
     return fromBase64(sig);
   }
