@@ -23,6 +23,8 @@ ES384 | ECDSA using P-384 curve and SHA-384 hash algorithm
 ES512 | ECDSA using P-521 curve and SHA-512 hash algorithm
 none | No digital signature or MAC value included
 
+Please note that PS* only works on Node 6.12+ (excluding 7.x).
+
 # Requirements
 
 In order to run the tests, a recent version of OpenSSL is
