@@ -72,12 +72,50 @@ if (semver.gte(nodeVersion, '0.11.8')) {
   });
 }
 
+test('RSA-PSS signing, verifying', function (t) {
+  const input = 'h. jon benjamin';
+  BIT_DEPTHS.forEach(function (bits) {
+    const algo = jwa('ps'+bits);
+    const sig = algo.sign(input, rsaPrivateKey);
+    t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
+    t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'shoud not verify');
+  });
+  t.end();
+});
+
 
 BIT_DEPTHS.forEach(function (bits) {
   test('RS'+bits+': openssl sign -> js verify', function (t) {
     const input = 'iodine';
     const algo = jwa('rs'+bits);
     const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/rsa-private.pem']);
+    var buffer = Buffer.alloc(0);
+
+    dgst.stdout.on('data', function (buf) {
+      buffer = Buffer.concat([buffer, buf]);
+    });
+
+    dgst.stdin.write(input, function() {
+      dgst.stdin.end();
+    });
+
+    dgst.on('exit', function (code) {
+      if (code !== 0)
+        return t.fail('could not test interop: openssl failure');
+      const sig = base64url(buffer);
+
+      t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
+      t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'should not verify');
+      t.end();
+    });
+  });
+});
+
+BIT_DEPTHS.forEach(function (bits) {
+  test('PS'+bits+': openssl sign -> js verify', function (t) {
+    const input = 'iodine';
+    const algo = jwa('ps'+bits);
+    const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sigopt', 'rsa_padding_mode:pss', '-sign', __dirname + '/rsa-private.pem']);
     var buffer = Buffer.alloc(0);
 
     dgst.stdout.on('data', function (buf) {
@@ -205,6 +243,43 @@ BIT_DEPTHS.forEach(function (bits) {
   });
 });
 
+BIT_DEPTHS.forEach(function (bits) {
+  const input = 'burgers';
+  const inputFile = path.join(__dirname, 'interop.input.txt');
+  const signatureFile = path.join(__dirname, 'interop.sig.txt');
+
+  function opensslVerify(keyfile) {
+    return spawn('openssl', [
+      'dgst',
+      '-sha'+bits,
+      '-sigopt', 'rsa_padding_mode:pss',
+      '-verify', keyfile,
+      '-signature', signatureFile,
+      inputFile
+    ]);
+  }
+
+  test('PS'+bits+': js sign -> openssl verify', function (t) {
+    const publicKeyFile = path.join(__dirname, 'rsa-public.pem');
+    const wrongPublicKeyFile = path.join(__dirname, 'rsa-wrong-public.pem');
+    const privateKey = rsaPrivateKey;
+    const signature =
+      base64url.toBuffer(
+        jwa('ps'+bits).sign(input, privateKey)
+      );
+    fs.writeFileSync(signatureFile, signature);
+    fs.writeFileSync(inputFile, input);
+
+    t.plan(2);
+    opensslVerify(publicKeyFile).on('exit', function (code) {
+      t.same(code, 0, 'should be a successful exit');
+    });
+    opensslVerify(wrongPublicKeyFile).on('exit', function (code) {
+      t.same(code, 1, 'should be invalid');
+    });
+  });
+});
+
 
 test('jwa: none', function (t) {
   const input = 'whatever';
@@ -239,7 +314,7 @@ test('jwa: some garbage algorithm', function (t) {
   });
 });
 
-['rs', 'es', 'hs'].forEach(function (partialAlg) {
+['rs', 'ps', 'es', 'hs'].forEach(function (partialAlg) {
   test('jwa: partial strings of other algorithms', function (t) {
     try {
       jwa(partialAlg);
@@ -297,6 +372,41 @@ test('jwa: rs512, missing signing key', function (t) {
 
 test('jwa: rs512, missing verifying key', function (t) {
   const algo = jwa('rs512');
+  const input = {a: ['whatever', 'this', 'is']};
+  const sig = algo.sign(input, rsaPrivateKey);
+  try {
+    algo.verify(input, sig);
+    t.fail('should throw');
+  } catch(ex) {
+    t.same(ex.name, 'TypeError');
+    t.ok(ex.message.match(/key/), 'should say something about keys');
+  }
+  t.end();
+});
+
+test('jwa: ps512, weird input type', function (t) {
+  const algo = jwa('ps512');
+  const input = {a: ['whatever', 'this', 'is']};
+  const sig = algo.sign(input, rsaPrivateKey);
+  t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
+  t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'should not verify');
+  t.end();
+});
+
+test('jwa: ps512, missing signing key', function (t) {
+  const algo = jwa('ps512');
+  try {
+    algo.sign('some stuff');
+    t.fail('should throw');
+  } catch(ex) {
+    t.same(ex.name, 'TypeError');
+    t.ok(ex.message.match(/key/), 'should say something about keys');
+  }
+  t.end();
+});
+
+test('jwa: ps512, missing verifying key', function (t) {
+  const algo = jwa('ps512');
   const input = {a: ['whatever', 'this', 'is']};
   const sig = algo.sign(input, rsaPrivateKey);
   try {
