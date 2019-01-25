@@ -15,10 +15,15 @@ HS512 | HMAC using SHA-512 hash algorithm
 RS256 | RSASSA using SHA-256 hash algorithm
 RS384 | RSASSA using SHA-384 hash algorithm
 RS512 | RSASSA using SHA-512 hash algorithm
+PS256 | RSASSA-PSS using SHA-256 hash algorithm
+PS384 | RSASSA-PSS using SHA-384 hash algorithm
+PS512 | RSASSA-PSS using SHA-512 hash algorithm
 ES256 | ECDSA using P-256 curve and SHA-256 hash algorithm
 ES384 | ECDSA using P-384 curve and SHA-384 hash algorithm
 ES512 | ECDSA using P-521 curve and SHA-512 hash algorithm
 none | No digital signature or MAC value included
+
+Please note that PS* only works on Node 6.12+ (excluding 7.x).
 
 # Requirements
 
@@ -64,7 +69,7 @@ called on it to attempt to coerce it.
 
 For the HMAC algorithm, `secretOrPrivateKey` should be a string or a
 buffer. For ECDSA and RSA, the value should be a string representing a
-PEM encoded **private** key. 
+PEM encoded **private** key.
 
 Output [base64url](http://en.wikipedia.org/wiki/Base64#URL_applications)
 formatted. This is for convenience as JWS expects the signature in this
