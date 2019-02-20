@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const path = require('path');
 const base64url = require('base64url');
 const formatEcdsa = require('ecdsa-sig-formatter');
@@ -9,6 +10,7 @@ const test = require('tap').test;
 const jwa = require('..');
 
 const nodeVersion = semver.clean(process.version);
+const SUPPORTS_KEY_OBJECTS = typeof crypto.createPublicKey === 'function';
 
 // these key files will be generated as part of `make test`
 const rsaPrivateKey = fs.readFileSync(__dirname + '/rsa-private.pem').toString();
@@ -71,6 +73,20 @@ if (semver.gte(nodeVersion, '0.11.8')) {
   t.end();
   });
 }
+
+if (SUPPORTS_KEY_OBJECTS) {
+  BIT_DEPTHS.forEach(function (bits) {
+    test('RS'+bits+': signing, verifying (KeyObject)', function (t) {
+      const input = 'h. jon benjamin';
+      const algo = jwa('rs'+bits);
+      const sig = algo.sign(input, crypto.createPrivateKey(rsaPrivateKey));
+      t.ok(algo.verify(input, sig, crypto.createPublicKey(rsaPublicKey)), 'should verify');
+      t.notOk(algo.verify(input, sig, crypto.createPublicKey(rsaWrongPublicKey)), 'shoud not verify');
+      t.end();
+    });
+  });
+}
+
 
 if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
   test('RSA-PSS signing, verifying', function (t) {
@@ -152,6 +168,19 @@ BIT_DEPTHS.forEach(function (bits) {
     t.end();
   });
 });
+
+if (SUPPORTS_KEY_OBJECTS) {
+  BIT_DEPTHS.forEach(function (bits) {
+    test('ES'+bits+': signing, verifying (KeyObject)', function (t) {
+      const input = 'kristen schaal';
+      const algo = jwa('es'+bits);
+      const sig = algo.sign(input, crypto.createPrivateKey(ecdsaPrivateKey[bits]));
+      t.ok(algo.verify(input, sig, crypto.createPublicKey(ecdsaPublicKey[bits])), 'should verify');
+      t.notOk(algo.verify(input, sig, crypto.createPublicKey(ecdsaWrongPublicKey[bits])), 'should not verify');
+      t.end();
+    });
+  });
+}
 
 BIT_DEPTHS.forEach(function (bits) {
   test('ES'+bits+': openssl sign -> js verify', function (t) {

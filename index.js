@@ -9,6 +9,59 @@ var MSG_INVALID_SECRET = 'secret must be a string or buffer';
 var MSG_INVALID_VERIFIER_KEY = 'key must be a string or a buffer';
 var MSG_INVALID_SIGNER_KEY = 'key must be a string, a buffer or an object';
 
+var supportsKeyObjects = typeof crypto.createPublicKey === 'function';
+if (supportsKeyObjects) {
+  MSG_INVALID_VERIFIER_KEY += ' or a KeyObject';
+}
+
+function checkIsPublicKey(key) {
+  if (Buffer.isBuffer(key)) {
+    return key;
+  }
+
+  if (typeof key === 'string') {
+    return key;
+  }
+
+  if (!supportsKeyObjects) {
+    throw typeError(MSG_INVALID_VERIFIER_KEY);
+  }
+
+  if (typeof key !== 'object') {
+    throw typeError(MSG_INVALID_VERIFIER_KEY);
+  }
+
+  if (typeof key.type !== 'string') {
+    throw typeError(MSG_INVALID_VERIFIER_KEY);
+  }
+
+  if (typeof key.asymmetricKeyType !== 'string') {
+    throw typeError(MSG_INVALID_VERIFIER_KEY);
+  }
+
+  if (typeof key.export !== 'function') {
+    throw typeError(MSG_INVALID_VERIFIER_KEY);
+  }
+
+  return key;
+};
+
+function checkIsPrivateKey(key) {
+  if (Buffer.isBuffer(key)) {
+    return key;
+  }
+
+  if (typeof key === 'string') {
+    return key;
+  }
+
+  if (typeof key === 'object') {
+    return key;
+  }
+
+  throw typeError(MSG_INVALID_SIGNER_KEY);
+};
+
 function fromBase64(base64) {
   return base64
     .replace(/=/g, '')
@@ -67,8 +120,7 @@ function createHmacVerifier(bits) {
 
 function createKeySigner(bits) {
  return function sign(thing, privateKey) {
-    if (!bufferOrString(privateKey) && !(typeof privateKey === 'object'))
-      throw typeError(MSG_INVALID_SIGNER_KEY);
+    checkIsPrivateKey(privateKey);
     thing = normalizeInput(thing);
     // Even though we are specifying "RSA" here, this works with ECDSA
     // keys as well.
@@ -80,8 +132,7 @@ function createKeySigner(bits) {
 
 function createKeyVerifier(bits) {
   return function verify(thing, signature, publicKey) {
-    if (!bufferOrString(publicKey))
-      throw typeError(MSG_INVALID_VERIFIER_KEY);
+    checkIsPublicKey(publicKey);
     thing = normalizeInput(thing);
     signature = toBase64(signature);
     var verifier = crypto.createVerify('RSA-SHA' + bits);
