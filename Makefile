@@ -7,7 +7,7 @@ test: test/keys
 test/keys:
 	@openssl genrsa 2048 > test/rsa-private.pem
 	@openssl genrsa 2048 > test/rsa-wrong-private.pem
-	@openssl genrsa 2048 -passout pass:test_pass > test/rsa-passphrase-private.pem
+	@openssl genrsa -passout pass:test_pass 2048 > test/rsa-passphrase-private.pem
 	@openssl rsa -in test/rsa-private.pem -pubout > test/rsa-public.pem
 	@openssl rsa -in test/rsa-wrong-private.pem -pubout > test/rsa-wrong-public.pem
 	@openssl rsa -in test/rsa-passphrase-private.pem -pubout -passin pass:test_pass > test/rsa-passphrase-public.pem
