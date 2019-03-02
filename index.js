@@ -17,11 +17,11 @@ if (supportsKeyObjects) {
 
 function checkIsPublicKey(key) {
   if (Buffer.isBuffer(key)) {
-    return key;
+    return;
   }
 
   if (typeof key === 'string') {
-    return key;
+    return;
   }
 
   if (!supportsKeyObjects) {
@@ -43,21 +43,19 @@ function checkIsPublicKey(key) {
   if (typeof key.export !== 'function') {
     throw typeError(MSG_INVALID_VERIFIER_KEY);
   }
-
-  return key;
 };
 
 function checkIsPrivateKey(key) {
   if (Buffer.isBuffer(key)) {
-    return key;
+    return;
   }
 
   if (typeof key === 'string') {
-    return key;
+    return;
   }
 
   if (typeof key === 'object') {
-    return key;
+    return;
   }
 
   throw typeError(MSG_INVALID_SIGNER_KEY);
