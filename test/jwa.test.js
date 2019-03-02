@@ -99,6 +99,19 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
     });
     t.end();
   });
+
+  if (SUPPORTS_KEY_OBJECTS) {
+    BIT_DEPTHS.forEach(function (bits) {
+      test('PS'+bits+': signing, verifying (KeyObject)', function (t) {
+        const input = 'h. jon benjamin';
+        const algo = jwa('ps'+bits);
+        const sig = algo.sign(input, crypto.createPrivateKey(rsaPrivateKey));
+        t.ok(algo.verify(input, sig, crypto.createPublicKey(rsaPublicKey)), 'should verify');
+        t.notOk(algo.verify(input, sig, crypto.createPublicKey(rsaWrongPublicKey)), 'should not verify');
+        t.end();
+      });
+    });
+  }
 }
 
 

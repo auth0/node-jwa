@@ -142,9 +142,8 @@ function createKeyVerifier(bits) {
 }
 
 function createPSSKeySigner(bits) {
- return function sign(thing, privateKey) {
-    if (!bufferOrString(privateKey) && !(typeof privateKey === 'object'))
-      throw typeError(MSG_INVALID_SIGNER_KEY);
+  return function sign(thing, privateKey) {
+    checkIsPrivateKey(privateKey);
     thing = normalizeInput(thing);
     var signer = crypto.createSign('RSA-SHA' + bits);
     var sig = (signer.update(thing), signer.sign({key: privateKey, padding: crypto.constants.RSA_PKCS1_PSS_PADDING}, 'base64'));
@@ -154,8 +153,7 @@ function createPSSKeySigner(bits) {
 
 function createPSSKeyVerifier(bits) {
   return function verify(thing, signature, publicKey) {
-    if (!bufferOrString(publicKey))
-      throw typeError(MSG_INVALID_VERIFIER_KEY);
+    checkIsPublicKey(publicKey);
     thing = normalizeInput(thing);
     signature = toBase64(signature);
     var verifier = crypto.createVerify('RSA-SHA' + bits);
