@@ -49,6 +49,33 @@ test('HMAC signing, verifying', function (t) {
   t.end();
 });
 
+if (SUPPORTS_KEY_OBJECTS) {
+  BIT_DEPTHS.forEach(function (bits) {
+    const input = 'foo bar baz';
+    const secret = 'this-is-a-bad-secret';
+    const secretBuf = Buffer.from(secret, 'utf8');
+    const secretObj = crypto.createSecretKey(secretBuf);
+
+    test('HS' + bits + 'signing, verifying (w/ KeyObject)', function (t) {
+      const algo = jwa('hs' + bits);
+
+      const sigs = [
+        algo.sign(input, secret),
+        algo.sign(input, secretBuf),
+        algo.sign(input, secretObj)
+      ];
+
+      for (var i = 0; i < sigs.length; ++i) {
+        t.ok(algo.verify(input, sigs[i], secret));
+        t.ok(algo.verify(input, sigs[i], secretBuf));
+        t.ok(algo.verify(input, sigs[i], secretObj));
+      }
+
+      t.end();
+    });
+  });
+}
+
 test('RSA signing, verifying', function (t) {
   const input = 'h. jon benjamin';
   BIT_DEPTHS.forEach(function (bits) {

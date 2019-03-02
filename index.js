@@ -12,6 +12,7 @@ var MSG_INVALID_SIGNER_KEY = 'key must be a string, a buffer or an object';
 var supportsKeyObjects = typeof crypto.createPublicKey === 'function';
 if (supportsKeyObjects) {
   MSG_INVALID_VERIFIER_KEY += ' or a KeyObject';
+  MSG_INVALID_SECRET += 'or a KeyObject';
 }
 
 function checkIsPublicKey(key) {
@@ -62,6 +63,32 @@ function checkIsPrivateKey(key) {
   throw typeError(MSG_INVALID_SIGNER_KEY);
 };
 
+function checkIsSecretKey(key) {
+  if (Buffer.isBuffer(key)) {
+    return;
+  }
+
+  if (typeof key === 'string') {
+    return key;
+  }
+
+  if (!supportsKeyObjects) {
+    throw typeError(MSG_INVALID_SECRET);
+  }
+
+  if (typeof key !== 'object') {
+    throw typeError(MSG_INVALID_SECRET);
+  }
+
+  if (key.type !== 'secret') {
+    throw typeError(MSG_INVALID_SECRET);
+  }
+
+  if (typeof key.export !== 'function') {
+    throw typeError(MSG_INVALID_SECRET);
+  }
+}
+
 function fromBase64(base64) {
   return base64
     .replace(/=/g, '')
@@ -102,8 +129,7 @@ function normalizeInput(thing) {
 
 function createHmacSigner(bits) {
   return function sign(thing, secret) {
-    if (!bufferOrString(secret))
-      throw typeError(MSG_INVALID_SECRET);
+    checkIsSecretKey(secret);
     thing = normalizeInput(thing);
     var hmac = crypto.createHmac('sha' + bits, secret);
     var sig = (hmac.update(thing), hmac.digest('base64'))
