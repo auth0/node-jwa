@@ -174,7 +174,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
     test('PS'+bits+': openssl sign -> js verify', function (t) {
       const input = 'iodine';
       const algo = jwa('ps'+bits);
-      const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sigopt', 'rsa_padding_mode:pss', '-sign', __dirname + '/rsa-private.pem']);
+      const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sigopt', 'rsa_padding_mode:pss', '-sigopt', 'rsa_pss_saltlen:-1', '-sign', __dirname + '/rsa-private.pem']);
       var buffer = Buffer.alloc(0);
 
       dgst.stdout.on('data', function (buf) {

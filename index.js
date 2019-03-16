@@ -170,7 +170,11 @@ function createPSSKeySigner(bits) {
     checkIsPrivateKey(privateKey);
     thing = normalizeInput(thing);
     var signer = crypto.createSign('RSA-SHA' + bits);
-    var sig = (signer.update(thing), signer.sign({key: privateKey, padding: crypto.constants.RSA_PKCS1_PSS_PADDING}, 'base64'));
+    var sig = (signer.update(thing), signer.sign({
+      key: privateKey,
+      padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+      saltLength: crypto.constants.RSA_PSS_SALTLEN_DIGEST
+    }, 'base64'));
     return fromBase64(sig);
   }
 }
@@ -182,7 +186,11 @@ function createPSSKeyVerifier(bits) {
     signature = toBase64(signature);
     var verifier = crypto.createVerify('RSA-SHA' + bits);
     verifier.update(thing);
-    return verifier.verify({key: publicKey, padding: crypto.constants.RSA_PKCS1_PSS_PADDING}, signature, 'base64');
+    return verifier.verify({
+      key: publicKey,
+      padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+      saltLength: crypto.constants.RSA_PSS_SALTLEN_DIGEST
+    }, signature, 'base64');
   }
 }
 
