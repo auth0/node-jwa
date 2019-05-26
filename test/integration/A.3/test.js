@@ -9,7 +9,7 @@ const Buffer = require('safe-buffer').Buffer;
 const jwkToPem = require('jwk-to-pem');
 const test = require('tap').test;
 
-const jwa = require('../../');
+const jwa = require('../../../dist');
 
 const input = fs.readFileSync(path.join(__dirname, 'input.txt'));
 const inputFromBytes = Buffer.from(JSON.parse(fs.readFileSync(path.join(__dirname, 'input.bytes.json'), 'utf8')));

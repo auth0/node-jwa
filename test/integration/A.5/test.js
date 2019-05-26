@@ -7,7 +7,7 @@ const path = require('path');
 
 const test = require('tap').test;
 
-const jwa = require('../../');
+const jwa = require('../../../dist');
 
 const input = fs.readFileSync(path.join(__dirname, 'input.txt'));
 
