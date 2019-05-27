@@ -27,8 +27,7 @@
     "test:keys:clean": "node scripts/cleankeys"
   },
   "dependencies": {
-    "ecdsa-sig-formatter": "1.0.11",
-    "safe-buffer": "^5.1.2"
+    "ecdsa-sig-formatter": "1.0.11"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
