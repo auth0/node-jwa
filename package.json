@@ -21,7 +21,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "test": "jest",
     "test:keys:gen": "node scripts/genkeys",
     "test:keys:clean": "node scripts/cleankeys"

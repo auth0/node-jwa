@@ -1,8 +1,8 @@
-import { KeyObject } from "crypto";
+import { KeyObject, BinaryLike } from "crypto";
 
 export type Bit = '256' | '384' | '512';
 
-export type PublicKey = string | Object | Buffer | KeyObject;
+export type PublicKey = BinaryLike | KeyObject;
 
 export interface SignerFactory {
     (bits: Bit): (data: any, privateKey?: string | Buffer) => string;
