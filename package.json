@@ -28,10 +28,9 @@
     "docker:test": "npm run docker:test:build && npm run docker:test:run",
     "docker:test:build": "docker build --target test -t node-jwa:test .",
     "docker:test:run": "docker run --rm node-jwa:test",
-    "test": "jest",
-    "test:all": "npm run test:unit && npm run test:integration",
-    "test:unit": "npm t",
-    "test:integration": "jest -c jest.integration.config.js",
+    "test": "jest -c ./jest/jest.config.js",
+    "test:unit": "jest -c ./jest/jest.unit.config.js",
+    "test:integration": "jest -c ./jestjest.integration.config.js",
     "test:keys:gen": "node scripts/genkeys",
     "test:keys:clean": "node scripts/cleankeys"
   },

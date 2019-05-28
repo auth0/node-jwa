@@ -4,6 +4,10 @@ import {
     assertSecretKeyHasValidType
 } from '../../src/assertion';
 import { KeyObject, createPublicKey } from 'crypto';
+import { readFile } from 'fs';
+import { promisify } from 'util';
+import { join } from 'path';
+const rf = promisify(readFile);
 
 describe('Assertion', () => {
     describe('#assertPrivateKeyHasValidType', () => {
@@ -18,8 +22,9 @@ describe('Assertion', () => {
             expect(() => assertPrivateKeyHasValidType(input)).not.toThrow();
         });
 
-        it('does not throw when given a KeyObject', () => {
-            const input: KeyObject = createPublicKey('super secret public key');
+        it('does not throw when given a KeyObject', async () => {
+            const key = await rf(join(__dirname, '..', 'fixtures', 'rsa-public.pem'));
+            const input: KeyObject = createPublicKey(key);
             expect(() => assertPrivateKeyHasValidType(input)).not.toThrow();
         });
     });
