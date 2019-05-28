@@ -29,8 +29,11 @@ function isLikeKeyObject(key: any): key is KeyObjectLike {
     return (
         typeof key === 'object' &&
         typeof key.type === 'string' &&
-        typeof key.asymmetricKeyType === 'string' &&
-        typeof key.export === 'function'
+        typeof key.export === 'function' && 
+        (
+            typeof key.asymmetricKeySize === 'number' ||
+            typeof key.symmetricSize === 'number'
+        )
     );
 }
 
@@ -38,7 +41,7 @@ export function assertPublicKeyHasValidType(key: any) {
     if (isBuffer(key))
         return;
 
-    if (isString('string'))
+    if (isString(key))
         return;
 
     // Check if current node version supports KeyObjects
@@ -79,14 +82,19 @@ export function assertSecretKeyHasValidType(key: any) {
     if (!supportsKeyObjects)
         throw new TypeError(MSG_INVALID_SECRET);
 
-    if (!isKeyObject(key))
-        throw new TypeError(MSG_INVALID_SECRET);
+    if (isKeyObject(key))
+        return;
 
-    if (key.type !== 'secret')
-        throw new TypeError(MSG_INVALID_SECRET);
+    if(isLikeKeyObject(key))
+        return;
+
+    if (key.type === 'secret')
+        return;
     
-    if (typeof key.export !== 'function')
-        throw new TypeError(MSG_INVALID_SECRET);
+    if (typeof key.export === 'function')
+        return;
+
+    throw new TypeError(MSG_INVALID_SECRET);
 }
 
 
