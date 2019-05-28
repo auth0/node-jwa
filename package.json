@@ -22,7 +22,16 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "docker:genkeys": "node scripts/docker-genkeys",
+    "docker:genkeys:build": "node scripts/docker-genkeys build",
+    "docker:genkeys:run": "node scripts/docker-genkeys run",
+    "docker:test": "npm run docker:test:build && npm run docker:test:run",
+    "docker:test:build": "docker build --target test -t node-jwa:test .",
+    "docker:test:run": "docker run --rm node-jwa:test",
     "test": "jest",
+    "test:all": "npm run test:unit && npm run test:integration",
+    "test:unit": "npm t",
+    "test:integration": "jest -c jest.integration.config.js",
     "test:keys:gen": "node scripts/genkeys",
     "test:keys:clean": "node scripts/cleankeys"
   },
