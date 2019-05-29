@@ -22,12 +22,22 @@ describe('Assertion', () => {
             expect(() => assertPrivateKeyHasValidType(input)).not.toThrow();
         });
 
-        if(createPublicKey) { // Node 11+
+        if (createPublicKey) { // Node 11+
             it('does not throw when given a KeyObject', async () => {
                 const key = await rf(join(__dirname, '..', 'fixtures', 'rsa-public.pem'));
                 const input: KeyObject = createPublicKey(key);
                 expect(() => assertPrivateKeyHasValidType(input)).not.toThrow();
             });
+
+            it('does not throw when given an object like a KeyObject', async () => {
+                const keylike = JSON.parse(
+                    JSON.stringify(
+                        await rf(join(__dirname, '..', 'fixtures', 'rsa-public.pem'))
+                    )
+                );
+                expect(() => assertPrivateKeyHasValidType(keylike)).not.toThrow();
+            });
+
         }
     });
 
