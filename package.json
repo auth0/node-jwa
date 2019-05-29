@@ -22,6 +22,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "docs": "typedoc --out docs src",
     "docker:genkeys": "node scripts/docker-genkeys",
     "docker:genkeys:build": "node scripts/docker-genkeys build",
     "docker:genkeys:run": "node scripts/docker-genkeys run",
@@ -46,6 +47,7 @@
     "semver": "6.1.0",
     "shelljs": "^0.8.3",
     "ts-jest": "^24.0.2",
+    "typedoc": "^0.14.2",
     "typescript": "^3.4.5"
   }
 }

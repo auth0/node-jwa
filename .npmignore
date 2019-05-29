@@ -6,3 +6,5 @@ scripts/
 .dockerignore
 tsconfig.*
 package-lock.json
+docs
+coverage

@@ -3,3 +3,5 @@ test/*.pem
 test/keys
 test/*.txt
 dist
+coverage
+docs
