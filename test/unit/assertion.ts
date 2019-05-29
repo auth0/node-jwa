@@ -32,7 +32,9 @@ describe('Assertion', () => {
             it('does not throw when given an object like a KeyObject', async () => {
                 const keylike = JSON.parse(
                     JSON.stringify(
-                        await rf(join(__dirname, '..', 'fixtures', 'rsa-public.pem'))
+                        createPublicKey(
+                            await rf(join(__dirname, '..', 'fixtures', 'rsa-public.pem'))
+                        )
                     )
                 );
                 expect(() => assertPrivateKeyHasValidType(keylike)).not.toThrow();
