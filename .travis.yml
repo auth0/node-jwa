@@ -30,6 +30,7 @@ jobs:
         - npm t
 
     - stage: "Deploy Docs to GH Pages"
+      node_js: "10" # Current LTS
       script: npm run docs
       deploy:
         local_dir: ./docs
