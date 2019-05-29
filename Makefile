@@ -29,4 +29,4 @@ clean:
 	@rm test/*.pem
 	@rm test/keys
 
-.PHONY: test
+.PHONY: test clean verbose

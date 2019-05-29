@@ -1,17 +1,42 @@
 language: node_js
-node_js:
-  - 0.10
-  - 0.11
-  - 0.12
-  - 4
-  - 5
-  - 6
-  - 7
-  - 8
-  - 9
-  - 10
-  - 11
+
 notifications:
   email:
     recipients:
       - brianloveswords@gmail.com
+
+
+install:
+  - npm ci
+
+jobs:
+  include:
+    - stage: "Test"
+      name: "Node 8"
+      node_js: "8"
+      script: npm t
+
+    - name: "Node 10"
+      node_js: "10"
+      script: npm t
+
+    - name: "Node 11"
+      node_js: "11"
+      script: npm t
+    
+    - name: "Node 12"
+      node_js: "12"
+      script:
+        - npm t
+
+    - stage: "Deploy Docs to GH Pages"
+      node_js: "10" # Current LTS
+      script: npm run docs
+      deploy:
+        local_dir: ./docs
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        keep_history: true
+        on:
+          branch: master

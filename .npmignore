@@ -1,3 +1,10 @@
 Makefile
 test/
 .travis.yml
+jest/
+scripts/
+.dockerignore
+tsconfig.*
+package-lock.json
+docs
+coverage

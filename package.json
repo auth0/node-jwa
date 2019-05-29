@@ -2,24 +2,7 @@
   "name": "jwa",
   "version": "1.4.1",
   "description": "JWA implementation (supports all JWS algorithms)",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "dependencies": {
-    "buffer-equal-constant-time": "1.0.1",
-    "ecdsa-sig-formatter": "1.0.11",
-    "safe-buffer": "^5.0.1"
-  },
-  "devDependencies": {
-    "base64url": "^2.0.0",
-    "jwk-to-pem": "^2.0.1",
-    "semver": "4.3.6",
-    "tap": "6.2.0"
-  },
-  "scripts": {
-    "test": "make test"
-  },
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/brianloveswords/node-jwa.git"
@@ -33,5 +16,38 @@
     "hmac"
   ],
   "author": "Brian J. Brennan <brianloveswords@gmail.com>",
-  "license": "MIT"
+  "contributors": [
+    "Joseph Harrison-Lim"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "docs": "typedoc --out docs src",
+    "docker:genkeys": "node scripts/docker-genkeys",
+    "docker:genkeys:build": "node scripts/docker-genkeys build",
+    "docker:genkeys:run": "node scripts/docker-genkeys run",
+    "docker:test": "npm run docker:test:build && npm run docker:test:run",
+    "docker:test:build": "docker build --target test -t node-jwa:test .",
+    "docker:test:run": "docker run --rm node-jwa:test",
+    "test": "jest -c ./jest/jest.config.js",
+    "test:unit": "jest -c ./jest/jest.unit.config.js",
+    "test:integration": "jest -c ./jestjest.integration.config.js",
+    "test:keys:gen": "node scripts/genkeys",
+    "test:keys:clean": "node scripts/cleankeys"
+  },
+  "dependencies": {
+    "ecdsa-sig-formatter": "1.0.11"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "@types/node": "^12.0.2",
+    "base64url": "^3.0.1",
+    "jest": "^24.8.0",
+    "jwk-to-pem": "^2.0.1",
+    "semver": "6.1.0",
+    "shelljs": "^0.8.3",
+    "ts-jest": "^24.0.2",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.4.5"
+  }
 }
