@@ -21,7 +21,7 @@ const pubKey = jwkToPem(jwk);
 const signature = fs.readFileSync(path.join(__dirname, 'signature.txt'), 'ascii');
 const signatureFromBytes = Buffer.from(JSON.parse(fs.readFileSync(path.join(__dirname, 'signature.bytes.json'), 'utf8')));
 
-const algo = jwa('rs256');
+const algo = jwa('RS256');
 
 test('A.2', function (t) {
 	t.plan(6);

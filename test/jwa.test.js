@@ -40,7 +40,7 @@ test('HMAC signing, verifying', function (t) {
   const input = 'eugene mirman';
   const secret = 'shhhhhhhhhh';
   BIT_DEPTHS.forEach(function (bits) {
-    const algo = jwa('hs'+bits);
+    const algo = jwa('HS'+bits);
     const sig = algo.sign(input, secret);
     t.ok(algo.verify(input, sig, secret), 'should verify');
     t.notOk(algo.verify(input, 'other sig', secret), 'should verify');
@@ -57,7 +57,7 @@ if (SUPPORTS_KEY_OBJECTS) {
     const secretObj = crypto.createSecretKey(secretBuf);
 
     test('HS' + bits + 'signing, verifying (w/ KeyObject)', function (t) {
-      const algo = jwa('hs' + bits);
+      const algo = jwa('HS' + bits);
 
       const sigs = [
         algo.sign(input, secret),
@@ -79,7 +79,7 @@ if (SUPPORTS_KEY_OBJECTS) {
 test('RSA signing, verifying', function (t) {
   const input = 'h. jon benjamin';
   BIT_DEPTHS.forEach(function (bits) {
-    const algo = jwa('rs'+bits);
+    const algo = jwa('RS'+bits);
     const sig = algo.sign(input, rsaPrivateKey);
     t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
     t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'shoud not verify');
@@ -92,7 +92,7 @@ if (semver.gte(nodeVersion, '0.11.8')) {
   test('RSA with passphrase signing, verifying', function (t) {
   const input = 'test input';
   BIT_DEPTHS.forEach(function (bits) {
-    const algo = jwa('rs'+bits);
+    const algo = jwa('RS'+bits);
     const secret = 'test_pass';
     const sig = algo.sign(input, {key: rsaPrivateKeyWithPassphrase, passphrase: secret});
     t.ok(algo.verify(input, sig, rsaPublicKeyWithPassphrase), 'should verify');
@@ -105,7 +105,7 @@ if (SUPPORTS_KEY_OBJECTS) {
   BIT_DEPTHS.forEach(function (bits) {
     test('RS'+bits+': signing, verifying (KeyObject)', function (t) {
       const input = 'h. jon benjamin';
-      const algo = jwa('rs'+bits);
+      const algo = jwa('RS'+bits);
       const sig = algo.sign(input, crypto.createPrivateKey(rsaPrivateKey));
       t.ok(algo.verify(input, sig, crypto.createPublicKey(rsaPublicKey)), 'should verify');
       t.notOk(algo.verify(input, sig, crypto.createPublicKey(rsaWrongPublicKey)), 'shoud not verify');
@@ -119,7 +119,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
   test('RSA-PSS signing, verifying', function (t) {
     const input = 'h. jon benjamin';
     BIT_DEPTHS.forEach(function (bits) {
-      const algo = jwa('ps'+bits);
+      const algo = jwa('PS'+bits);
       const sig = algo.sign(input, rsaPrivateKey);
       t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
       t.notOk(algo.verify(input, sig, rsaWrongPublicKey), 'shoud not verify');
@@ -131,7 +131,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
     BIT_DEPTHS.forEach(function (bits) {
       test('PS'+bits+': signing, verifying (KeyObject)', function (t) {
         const input = 'h. jon benjamin';
-        const algo = jwa('ps'+bits);
+        const algo = jwa('PS'+bits);
         const sig = algo.sign(input, crypto.createPrivateKey(rsaPrivateKey));
         t.ok(algo.verify(input, sig, crypto.createPublicKey(rsaPublicKey)), 'should verify');
         t.notOk(algo.verify(input, sig, crypto.createPublicKey(rsaWrongPublicKey)), 'should not verify');
@@ -145,7 +145,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
 BIT_DEPTHS.forEach(function (bits) {
   test('RS'+bits+': openssl sign -> js verify', function (t) {
     const input = 'iodine';
-    const algo = jwa('rs'+bits);
+    const algo = jwa('RS'+bits);
     const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/rsa-private.pem']);
     var buffer = Buffer.alloc(0);
 
@@ -173,7 +173,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
   BIT_DEPTHS.forEach(function (bits) {
     test('PS'+bits+': openssl sign -> js verify', function (t) {
       const input = 'iodine';
-      const algo = jwa('ps'+bits);
+      const algo = jwa('PS'+bits);
       const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sigopt', 'rsa_padding_mode:pss', '-sigopt', 'rsa_pss_saltlen:-1', '-sign', __dirname + '/rsa-private.pem']);
       var buffer = Buffer.alloc(0);
 
@@ -201,7 +201,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
 BIT_DEPTHS.forEach(function (bits) {
   test('ES'+bits+': signing, verifying', function (t) {
     const input = 'kristen schaal';
-    const algo = jwa('es'+bits);
+    const algo = jwa('ES'+bits);
     const sig = algo.sign(input, ecdsaPrivateKey[bits]);
     t.ok(algo.verify(input, sig, ecdsaPublicKey[bits]), 'should verify');
     t.notOk(algo.verify(input, sig, ecdsaWrongPublicKey[bits]), 'should not verify');
@@ -213,7 +213,7 @@ if (SUPPORTS_KEY_OBJECTS) {
   BIT_DEPTHS.forEach(function (bits) {
     test('ES'+bits+': signing, verifying (KeyObject)', function (t) {
       const input = 'kristen schaal';
-      const algo = jwa('es'+bits);
+      const algo = jwa('ES'+bits);
       const sig = algo.sign(input, crypto.createPrivateKey(ecdsaPrivateKey[bits]));
       t.ok(algo.verify(input, sig, crypto.createPublicKey(ecdsaPublicKey[bits])), 'should verify');
       t.notOk(algo.verify(input, sig, crypto.createPublicKey(ecdsaWrongPublicKey[bits])), 'should not verify');
@@ -225,7 +225,7 @@ if (SUPPORTS_KEY_OBJECTS) {
 BIT_DEPTHS.forEach(function (bits) {
   test('ES'+bits+': openssl sign -> js verify', function (t) {
     const input = 'strawberry';
-    const algo = jwa('es'+bits);
+    const algo = jwa('ES'+bits);
     const dgst = spawn('openssl', ['dgst', '-sha'+bits, '-sign', __dirname + '/ec'+bits+'-private.pem']);
     var buffer = Buffer.alloc(0);
     dgst.stdin.end(input);
@@ -264,7 +264,7 @@ BIT_DEPTHS.forEach(function (bits) {
     const privateKey = ecdsaPrivateKey[bits];
     const signature =
       formatEcdsa.joseToDer(
-        jwa('es'+bits).sign(input, privateKey),
+        jwa('ES'+bits).sign(input, privateKey),
         'ES' + bits
       );
     fs.writeFileSync(inputFile, input);
@@ -301,7 +301,7 @@ BIT_DEPTHS.forEach(function (bits) {
     const privateKey = rsaPrivateKey;
     const signature =
       base64url.toBuffer(
-        jwa('rs'+bits).sign(input, privateKey)
+        jwa('RS'+bits).sign(input, privateKey)
       );
     fs.writeFileSync(signatureFile, signature);
     fs.writeFileSync(inputFile, input);
@@ -339,7 +339,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
       const privateKey = rsaPrivateKey;
       const signature =
         base64url.toBuffer(
-          jwa('ps'+bits).sign(input, privateKey)
+          jwa('PS'+bits).sign(input, privateKey)
         );
       fs.writeFileSync(signatureFile, signature);
       fs.writeFileSync(inputFile, input);
@@ -376,6 +376,19 @@ test('jwa: some garbage algorithm', function (t) {
   t.end();
 });
 
+['hs256', 'nonE', 'ps256', 'es256', 'rs256'].forEach(function (alg) {
+  test('jwa: non-IANA names', function (t) {
+    try {
+      jwa(alg);
+      t.fail('should throw');
+    } catch(ex) {
+      t.same(ex.name, 'TypeError');
+      t.ok(ex.message.match(/valid algorithm/), 'should say something about algorithms');
+    }
+    t.end();
+  });
+});
+
 ['ahs256b', 'anoneb', 'none256', 'rsnone'].forEach(function (superstringAlg) {
   test('jwa: superstrings of other algorithms', function (t) {
     try {
@@ -403,7 +416,7 @@ test('jwa: some garbage algorithm', function (t) {
 });
 
 test('jwa: hs512, missing secret', function (t) {
-  const algo = jwa('hs512');
+  const algo = jwa('HS512');
   try {
     algo.sign('some stuff');
     t.fail('should throw');
@@ -415,7 +428,7 @@ test('jwa: hs512, missing secret', function (t) {
 });
 
 test('jwa: hs512, weird input type', function (t) {
-  const algo = jwa('hs512');
+  const algo = jwa('HS512');
   const input = {a: ['whatever', 'this', 'is']};
   const secret = 'bones';
   const sig = algo.sign(input, secret);
@@ -425,7 +438,7 @@ test('jwa: hs512, weird input type', function (t) {
 });
 
 test('jwa: rs512, weird input type', function (t) {
-  const algo = jwa('rs512');
+  const algo = jwa('RS512');
   const input = {a: ['whatever', 'this', 'is']};
   const sig = algo.sign(input, rsaPrivateKey);
   t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
@@ -434,7 +447,7 @@ test('jwa: rs512, weird input type', function (t) {
 });
 
 test('jwa: rs512, missing signing key', function (t) {
-  const algo = jwa('rs512');
+  const algo = jwa('RS512');
   try {
     algo.sign('some stuff');
     t.fail('should throw');
@@ -446,7 +459,7 @@ test('jwa: rs512, missing signing key', function (t) {
 });
 
 test('jwa: rs512, missing verifying key', function (t) {
-  const algo = jwa('rs512');
+  const algo = jwa('RS512');
   const input = {a: ['whatever', 'this', 'is']};
   const sig = algo.sign(input, rsaPrivateKey);
   try {
@@ -461,7 +474,7 @@ test('jwa: rs512, missing verifying key', function (t) {
 
 if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
   test('jwa: ps512, weird input type', function (t) {
-    const algo = jwa('ps512');
+    const algo = jwa('PS512');
     const input = {a: ['whatever', 'this', 'is']};
     const sig = algo.sign(input, rsaPrivateKey);
     t.ok(algo.verify(input, sig, rsaPublicKey), 'should verify');
@@ -470,7 +483,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
   });
 
   test('jwa: ps512, missing signing key', function (t) {
-    const algo = jwa('ps512');
+    const algo = jwa('PS512');
     try {
       algo.sign('some stuff');
       t.fail('should throw');
@@ -482,7 +495,7 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
   });
 
   test('jwa: ps512, missing verifying key', function (t) {
-    const algo = jwa('ps512');
+    const algo = jwa('PS512');
     const input = {a: ['whatever', 'this', 'is']};
     const sig = algo.sign(input, rsaPrivateKey);
     try {

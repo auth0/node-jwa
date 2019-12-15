@@ -19,7 +19,7 @@ const pubKey = jwkToPem(jwk);
 
 const signature = fs.readFileSync(path.join(__dirname, 'signature.txt'), 'ascii');
 
-const algo = jwa('es256');
+const algo = jwa('ES256');
 
 test('A.3', function (t) {
 	t.plan(3);

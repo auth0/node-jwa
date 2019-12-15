@@ -18,7 +18,7 @@ const key = Buffer.from(JSON.parse(fs.readFileSync(path.join(__dirname, 'key.jso
 const signature = fs.readFileSync(path.join(__dirname, 'signature.txt'), 'ascii');
 const signatureFromBytes = Buffer.from(JSON.parse(fs.readFileSync(path.join(__dirname, 'signature.bytes.json'), 'utf8')));
 
-const algo = jwa('hs256');
+const algo = jwa('HS256');
 
 test('A.1', function (t) {
 	t.plan(6);
