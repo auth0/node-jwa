@@ -32,15 +32,15 @@ function checkIsPublicKey(key) {
     throw typeError(MSG_INVALID_VERIFIER_KEY);
   }
 
-  if (typeof key.type !== 'string') {
+  if (key.type && typeof key.type !== 'string') {
     throw typeError(MSG_INVALID_VERIFIER_KEY);
   }
 
-  if (typeof key.asymmetricKeyType !== 'string') {
+  if (key.asymmetricKeyType && typeof key.asymmetricKeyType !== 'string') {
     throw typeError(MSG_INVALID_VERIFIER_KEY);
   }
 
-  if (typeof key.export !== 'function') {
+  if (key.export && typeof key.export !== 'function') {
     throw typeError(MSG_INVALID_VERIFIER_KEY);
   }
 };
@@ -143,7 +143,7 @@ function createHmacVerifier(bits) {
 }
 
 function createKeySigner(bits) {
- return function sign(thing, privateKey) {
+  return function sign(thing, privateKey) {
     checkIsPrivateKey(privateKey);
     thing = normalizeInput(thing);
     // Even though we are specifying "RSA" here, this works with ECDSA
