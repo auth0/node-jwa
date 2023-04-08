@@ -224,29 +224,92 @@ function createNoneVerifier() {
   }
 }
 
-module.exports = function jwa(algorithm) {
-  var signerFactories = {
-    hs: createHmacSigner,
-    rs: createKeySigner,
-    ps: createPSSKeySigner,
-    es: createECDSASigner,
-    none: createNoneSigner,
-  }
-  var verifierFactories = {
-    hs: createHmacVerifier,
-    rs: createKeyVerifier,
-    ps: createPSSKeyVerifier,
-    es: createECDSAVerifer,
-    none: createNoneVerifier,
-  }
-  var match = algorithm.match(/^(RS|PS|ES|HS)(256|384|512)$|^(none)$/);
-  if (!match)
-    throw typeError(MSG_INVALID_ALGORITHM, algorithm);
-  var algo = (match[1] || match[3]).toLowerCase();
-  var bits = match[2];
+var jwaHmac256 = Object.freeze({
+  sign: createHmacSigner('256'),
+  verify: createHmacVerifier('256'),
+});
 
-  return {
-    sign: signerFactories[algo](bits),
-    verify: verifierFactories[algo](bits),
-  }
+var jwaHmac384 = Object.freeze({
+  sign: createHmacSigner('384'),
+  verify: createHmacVerifier('384'),
+});
+
+var jwaHmac512 = Object.freeze({
+  sign: createHmacSigner('512'),
+  verify: createHmacVerifier('512'),
+});
+
+var jwaRsaSha256 = Object.freeze({
+  sign: createKeySigner('256'),
+  verify: createKeyVerifier('256'),
+});
+
+var jwaRsaSha384 = Object.freeze({
+  sign: createKeySigner('384'),
+  verify: createKeyVerifier('384'),
+});
+
+var jwaRsaSha512 = Object.freeze({
+  sign: createKeySigner('512'),
+  verify: createKeyVerifier('512'),
+});
+
+var jwaPssSha256 = Object.freeze({
+  sign: createPSSKeySigner('256'),
+  verify: createPSSKeyVerifier('256'),
+});
+
+var jwaPssSha384 = Object.freeze({
+  sign: createPSSKeySigner('384'),
+  verify: createPSSKeyVerifier('384'),
+});
+
+var jwaPssSha512 = Object.freeze({
+  sign: createPSSKeySigner('512'),
+  verify: createPSSKeyVerifier('512'),
+});
+
+var jwaECDSA256 = Object.freeze({
+  sign: createECDSASigner('256'),
+  verify: createECDSAVerifer('256'),
+});
+
+var jwaECDSA384 = Object.freeze({
+  sign: createECDSASigner('384'),
+  verify: createECDSAVerifer('384'),
+});
+
+var jwaECDSA512 = Object.freeze({
+  sign: createECDSASigner('512'),
+  verify: createECDSAVerifer('512'),
+});
+
+var jwaNone = Object.freeze({
+  sign: createNoneSigner(),
+  verify: createNoneVerifier(),
+});
+
+const algorithmsRecord = {
+  RS256: jwaRsaSha256,
+  RS384: jwaRsaSha384,
+  RS512: jwaRsaSha512,
+  PS256: jwaPssSha256,
+  PS384: jwaPssSha384,
+  PS512: jwaPssSha512,
+  HS256: jwaHmac256,
+  HS384: jwaHmac384,
+  HS512: jwaHmac512,
+  ES256: jwaECDSA256,
+  ES384: jwaECDSA384,
+  ES512: jwaECDSA512,
+  none: jwaNone,
 };
+
+module.exports = function jwa(algorithm) {
+  const algo = algorithmsRecord[algorithm];
+
+  if (!algo) 
+    throw typeError(MSG_INVALID_ALGORITHM, algorithm);
+
+  return algo;
+}
