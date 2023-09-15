@@ -8,17 +8,7 @@ var MSG_INVALID_SECRET = 'secret must be a string or buffer or a KeyObject';
 var MSG_INVALID_VERIFIER_KEY = 'key must be a string or a buffer or a KeyObject';
 var MSG_INVALID_SIGNER_KEY = 'key must be a string, a buffer or an object';
 
-/**
- * @param {Uint8Array} a
- * @param {Uint8Array} b
- */
-function timingSafeEqual(a, b) {
-  if (a.length !== b.length) return false
-
-  let c = 0;
-  for (let i = 0, len = a.length; i < len; i++) c |= a[i] ^ b[i];
-  return !c;
-}
+var timingSafeEqual = crypto.timingSafeEqual
 
 function checkIsPublicKey(key) {
   if (Buffer.isBuffer(key)) {
@@ -113,7 +103,9 @@ function createHmacSigner(bits) {
 function createHmacVerifier(bits) {
   return function verify(thing, signature, secret) {
     var computedSig = createHmacSigner(bits)(thing, secret);
-    return timingSafeEqual(Buffer.from(signature), Buffer.from(computedSig));
+    var a = Buffer.from(signature);
+    var b = Buffer.from(computedSig);
+    return a.byteLength === b.byteLength && timingSafeEqual(a, b);
   }
 }
 
@@ -123,7 +115,7 @@ function createKeySigner(bits) {
     thing = normalizeInput(thing);
     // Even though we are specifying "RSA" here, this works with ECDSA
     // keys as well.
-    var signer = crypto.createSign('RSA-SHA' + bits);
+    var signer = crypto.createSign('SHA' + bits);
     signer.update(thing);
     var sig = signer.sign(privateKey, 'base64url');
     return sig;
