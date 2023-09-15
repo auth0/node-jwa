@@ -126,7 +126,7 @@ function createKeyVerifier(bits) {
   return function verify(thing, signature, publicKey) {
     checkIsPublicKey(publicKey);
     thing = normalizeInput(thing);
-    var verifier = crypto.createVerify('RSA-SHA' + bits);
+    var verifier = crypto.createVerify('SHA' + bits);
     verifier.update(thing);
     return verifier.verify(publicKey, signature, 'base64url');
   }
@@ -136,7 +136,7 @@ function createPSSKeySigner(bits) {
   return function sign(thing, privateKey) {
     checkIsPrivateKey(privateKey);
     thing = normalizeInput(thing);
-    var signer = crypto.createSign('RSA-SHA' + bits);
+    var signer = crypto.createSign('SHA' + bits);
     signer.update(thing);
     var sig = signer.sign({
       key: privateKey,
@@ -151,7 +151,7 @@ function createPSSKeyVerifier(bits) {
   return function verify(thing, signature, publicKey) {
     checkIsPublicKey(publicKey);
     thing = normalizeInput(thing);
-    var verifier = crypto.createVerify('RSA-SHA' + bits);
+    var verifier = crypto.createVerify('SHA' + bits);
     verifier.update(thing);
     return verifier.verify({
       key: publicKey,
