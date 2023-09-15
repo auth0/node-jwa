@@ -1,9 +1,8 @@
 var Buffer = require('buffer').Buffer;
 var crypto = require('crypto');
 var formatEcdsa = require('ecdsa-sig-formatter');
-var util = require('util');
 
-var MSG_INVALID_ALGORITHM = '"%s" is not a valid algorithm.\n  Supported algorithms are:\n  "HS256", "HS384", "HS512", "RS256", "RS384", "RS512", "PS256", "PS384", "PS512", "ES256", "ES384", "ES512" and "none".'
+var MSG_INVALID_ALGORITHM = 'is not a valid algorithm.\n  Supported algorithms are:\n  "HS256", "HS384", "HS512", "RS256", "RS384", "RS512", "PS256", "PS384", "PS512", "ES256", "ES384", "ES512" and "none".'
 var MSG_INVALID_SECRET = 'secret must be a string or buffer or a KeyObject';
 var MSG_INVALID_VERIFIER_KEY = 'key must be a string or a buffer or a KeyObject';
 var MSG_INVALID_SIGNER_KEY = 'key must be a string, a buffer or an object';
@@ -20,19 +19,19 @@ function checkIsPublicKey(key) {
   }
 
   if (typeof key !== 'object') {
-    throw typeError(MSG_INVALID_VERIFIER_KEY);
+    throw new TypeError(MSG_INVALID_VERIFIER_KEY);
   }
 
   if (typeof key.type !== 'string') {
-    throw typeError(MSG_INVALID_VERIFIER_KEY);
+    throw new TypeError(MSG_INVALID_VERIFIER_KEY);
   }
 
   if (typeof key.asymmetricKeyType !== 'string') {
-    throw typeError(MSG_INVALID_VERIFIER_KEY);
+    throw new TypeError(MSG_INVALID_VERIFIER_KEY);
   }
 
   if (typeof key.export !== 'function') {
-    throw typeError(MSG_INVALID_VERIFIER_KEY);
+    throw new TypeError(MSG_INVALID_VERIFIER_KEY);
   }
 };
 
@@ -49,7 +48,7 @@ function checkIsPrivateKey(key) {
     return;
   }
 
-  throw typeError(MSG_INVALID_SIGNER_KEY);
+  throw new TypeError(MSG_INVALID_SIGNER_KEY);
 };
 
 function checkIsSecretKey(key) {
@@ -62,21 +61,16 @@ function checkIsSecretKey(key) {
   }
 
   if (typeof key !== 'object') {
-    throw typeError(MSG_INVALID_SECRET);
+    throw new TypeError(MSG_INVALID_SECRET);
   }
 
   if (key.type !== 'secret') {
-    throw typeError(MSG_INVALID_SECRET);
+    throw new TypeError(MSG_INVALID_SECRET);
   }
 
   if (typeof key.export !== 'function') {
-    throw typeError(MSG_INVALID_SECRET);
+    throw new TypeError(MSG_INVALID_SECRET);
   }
-}
-
-function typeError(template, ...args) {
-  var errMsg = util.format(template, ...args);
-  return new TypeError(errMsg);
 }
 
 function bufferOrString(obj) {
@@ -208,7 +202,7 @@ module.exports = function jwa(algorithm) {
   }
   var match = algorithm.match(/^(RS|PS|ES|HS)(256|384|512)$|^(none)$/);
   if (!match)
-    throw typeError(MSG_INVALID_ALGORITHM, algorithm);
+    throw new TypeError(`"${algorithm}" ` + MSG_INVALID_ALGORITHM);
   var algo = (match[1] || match[3]).toLowerCase();
   var bits = match[2];
 
