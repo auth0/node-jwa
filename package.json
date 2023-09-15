@@ -6,10 +6,11 @@
   "directories": {
     "test": "test"
   },
+  "engines": {
+    "node": ">=14.18.0"
+  },
   "dependencies": {
-    "buffer-equal-constant-time": "1.0.1",
-    "ecdsa-sig-formatter": "1.0.11",
-    "safe-buffer": "^5.0.1"
+    "ecdsa-sig-formatter": "1.0.11"
   },
   "devDependencies": {
     "base64url": "^2.0.0",
