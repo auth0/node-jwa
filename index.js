@@ -36,15 +36,7 @@ function checkIsPublicKey(key) {
 };
 
 function checkIsPrivateKey(key) {
-  if (Buffer.isBuffer(key)) {
-    return;
-  }
-
-  if (typeof key === 'string') {
-    return;
-  }
-
-  if (typeof key === 'object') {
+  if (Buffer.isBuffer(key) || typeof key === 'string' || typeof key === 'object') {
     return;
   }
 
@@ -52,23 +44,11 @@ function checkIsPrivateKey(key) {
 };
 
 function checkIsSecretKey(key) {
-  if (Buffer.isBuffer(key)) {
+  if (Buffer.isBuffer(key) || typeof key === 'string' || typeof key === 'object') {
     return;
   }
 
-  if (typeof key === 'string') {
-    return;
-  }
-
-  if (typeof key !== 'object') {
-    throw new TypeError(MSG_INVALID_SECRET);
-  }
-
-  if (key.type !== 'secret') {
-    throw new TypeError(MSG_INVALID_SECRET);
-  }
-
-  if (typeof key.export !== 'function') {
+  if (key.type !== 'secret' || typeof key.export !== 'function') {
     throw new TypeError(MSG_INVALID_SECRET);
   }
 }
