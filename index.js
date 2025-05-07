@@ -11,7 +11,7 @@ var MSG_INVALID_SIGNER_KEY = 'key must be a string, a buffer or an object';
 var supportsKeyObjects = typeof crypto.createPublicKey === 'function';
 if (supportsKeyObjects) {
   MSG_INVALID_VERIFIER_KEY += ' or a KeyObject';
-  MSG_INVALID_SECRET += 'or a KeyObject';
+  MSG_INVALID_SECRET += ' or a KeyObject';
 }
 
 function checkIsPublicKey(key) {
