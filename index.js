@@ -66,7 +66,7 @@ function checkIsSecretKey(key) {
   }
 
   if (typeof key === 'string') {
-    return key;
+    return;
   }
 
   if (!supportsKeyObjects) {
