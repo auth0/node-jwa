@@ -2,20 +2,21 @@
  * https://tools.ietf.org/html/rfc7515#appendix-A.5
  */
 
-const fs = require('fs');
-const path = require('path');
+import { test } from 'node:test'
+import assert from 'node:assert'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { jwa } from '../../index.js'
 
-const test = require('tap').test;
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-const jwa = require('../../');
+const input = fs.readFileSync(path.join(__dirname, 'input.txt'))
 
-const input = fs.readFileSync(path.join(__dirname, 'input.txt'));
+const algo = jwa('none')
 
-const algo = jwa('none');
-
-test('A.5', function (t) {
-	t.plan(2);
-
-	t.equal(algo.sign(input), '');
-	t.ok(algo.verify(input, ''));
+test('A.5', async () => {
+	assert.strictEqual(await algo.sign(input), '')
+	assert.ok(await algo.verify(input, ''))
 })

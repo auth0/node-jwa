@@ -23,31 +23,69 @@ ES384 | ECDSA using P-384 curve and SHA-384 hash algorithm
 ES512 | ECDSA using P-521 curve and SHA-512 hash algorithm
 none | No digital signature or MAC value included
 
-Please note that PS* only works on Node 6.12+ (excluding 7.x).
+## Features
 
-# Requirements
+- **ES Modules Only**: Pure ESM implementation
+- **Standards-Based Cryptography**: Uses Web Crypto API (SubtleCrypto) for all operations
+- **Cross-Environment Compatible**: Works with any JavaScript runtime supporting Web Crypto API
+- **Type Support**: Works seamlessly with both strings and Uint8Array inputs
+- **Async/Await**: All operations are async for non-blocking execution
+- **Zero Production Dependencies**: No external dependencies, pure Web Crypto API
 
-In order to run the tests, a recent version of OpenSSL is
-required. **The version that comes with OS X (OpenSSL 0.9.8r 8 Feb
-2011) is not recent enough**, as it does not fully support ECDSA
-keys. You'll need to use a version > 1.0.0; I tested with OpenSSL 1.0.1c 10 May 2012.
+## Breaking Changes in v4.0.0
 
-# Testing
+- **All signing and verification functions are now async** (return Promises)
+- Uses Web Crypto API instead of Node.js crypto module
+- Requires `await` when calling `sign()` and `verify()` methods:
 
-To run the tests, do
+```javascript
+// Before (v3.x - synchronous)
+const sig = algo.sign(message, key)
+const isValid = algo.verify(message, sig, key)
 
-```bash
-$ npm test
+// After (v4.x - asynchronous)
+const sig = await algo.sign(message, key)
+const isValid = await algo.verify(message, sig, key)
 ```
 
-This will generate a bunch of keypairs to use in testing. If you want to
-generate new keypairs, do `make clean` before running `npm test` again.
+## Requirements
 
-## Methodology
+- **Runtime**: Node.js >=18.0.0 or any environment with Web Crypto API support
 
-I spawn `openssl dgst -sign` to test OpenSSL sign → JS verify and
-`openssl dgst -verify` to test JS sign → OpenSSL verify for each of the
-RSA and ECDSA algorithms.
+## Installation
+
+```bash
+npm install jwa
+```
+
+## Usage
+
+```javascript
+import { jwa } from 'jwa'
+
+const algo = jwa('HS256')
+
+// Sign
+const message = 'test'
+const secret = 'my-secret'
+const signature = await algo.sign(message, secret)
+
+// Verify
+const isValid = await algo.verify(message, signature, secret)
+console.log(isValid) // true
+```
+
+## Testing
+
+To run the tests:
+
+```bash
+npm test
+```
+
+This will validate all supported algorithms against RFC 7515 test vectors.
+
+
 
 # Usage
 
@@ -62,7 +100,7 @@ algorithm value will throw a `TypeError`.
 ## jwa#sign(input, secretOrPrivateKey)
 
 Sign some input with either a secret for HMAC algorithms, or a private
-key for RSA and ECDSA algorithms.
+key for RSA and ECDSA algorithms. **Returns a Promise** that resolves to the signature.
 
 If input is not already a string or buffer, `JSON.stringify` will be
 called on it to attempt to coerce it.
@@ -85,7 +123,7 @@ version satisfies, then you can pass an object `{ key: '..', passphrase: '...' }
 
 ## jwa#verify(input, signature, secretOrPublicKey)
 
-Verify a signature. Returns `true` or `false`.
+Verify a signature. **Returns a Promise** that resolves to `true` or `false`.
 
 `signature` should be a base64url encoded string.
 
@@ -98,29 +136,30 @@ PEM encoded **public** key.
 
 HMAC
 ```js
-const jwa = require('jwa');
+import { jwa } from 'jwa'
 
-const hmac = jwa('HS256');
-const input = 'super important stuff';
-const secret = 'shhhhhh';
+const hmac = jwa('HS256')
+const input = 'super important stuff'
+const secret = 'shhhhhh'
 
-const signature = hmac.sign(input, secret);
-hmac.verify(input, signature, secret) // === true
-hmac.verify(input, signature, 'trickery!') // === false
+const signature = await hmac.sign(input, secret)
+await hmac.verify(input, signature, secret) // === true
+await hmac.verify(input, signature, 'trickery!') // === false
 ```
 
 With keys
 ```js
-const fs = require('fs');
-const jwa = require('jwa');
-const privateKey = fs.readFileSync(__dirname + '/ecdsa-p521-private.pem');
-const publicKey = fs.readFileSync(__dirname + '/ecdsa-p521-public.pem');
+import { readFile } from 'node:fs/promises'
+import { jwa } from 'jwa'
 
-const ecdsa = jwa('ES512');
-const input = 'very important stuff';
+const privateKey = await readFile('./ecdsa-p521-private.pem', 'utf8')
+const publicKey = await readFile('./ecdsa-p521-public.pem', 'utf8')
 
-const signature = ecdsa.sign(input, privateKey);
-ecdsa.verify(input, signature, publicKey) // === true
+const ecdsa = jwa('ES512')
+const input = 'very important stuff'
+
+const signature = await ecdsa.sign(input, privateKey)
+await ecdsa.verify(input, signature, publicKey) // === true
 ```
 ## License
 
