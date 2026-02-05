@@ -1,8 +1,8 @@
 verbose: test/keys
-	@./node_modules/.bin/tap -Rspec test
+	@node --test --verbose "test/**/*.js"
 
 test: test/keys
-	@./node_modules/.bin/tap test
+	@node --test "test/**/*.js"
 
 test/keys:
 	@openssl genrsa 2048 > test/rsa-private.pem
