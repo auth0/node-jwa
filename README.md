@@ -32,18 +32,18 @@ none | No digital signature or MAC value included
 - **Async/Await**: All operations are async for non-blocking execution
 - **Zero Production Dependencies**: No external dependencies, pure Web Crypto API
 
-## Breaking Changes in v4.0.0
+## Breaking Changes in v3.0.0
 
 - **All signing and verification functions are now async** (return Promises)
 - Uses Web Crypto API instead of Node.js crypto module
 - Requires `await` when calling `sign()` and `verify()` methods:
 
 ```javascript
-// Before (v3.x - synchronous)
+// Before (v2.x - synchronous)
 const sig = algo.sign(message, key)
 const isValid = algo.verify(message, sig, key)
 
-// After (v4.x - asynchronous)
+// After (v3.x - asynchronous)
 const sig = await algo.sign(message, key)
 const isValid = await algo.verify(message, sig, key)
 ```
