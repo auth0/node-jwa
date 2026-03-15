@@ -3,7 +3,6 @@ const path = require('path');
 const base64url = require('base64url');
 const formatEcdsa = require('ecdsa-sig-formatter');
 const spawn = require('child_process').spawn;
-const Buffer = require('safe-buffer').Buffer;
 const semver = require('semver');
 const fs = require('fs');
 const test = require('tap').test;

@@ -5,7 +5,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const Buffer = require('safe-buffer').Buffer;
 const test = require('tap').test;
 
 const jwa = require('../../');
