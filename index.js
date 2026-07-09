@@ -1,7 +1,7 @@
 var Buffer = require('safe-buffer').Buffer;
-var crypto = require('crypto');
+var crypto = require('node:crypto');
 var formatEcdsa = require('ecdsa-sig-formatter');
-var util = require('util');
+var util = require('node:util');
 
 var MSG_INVALID_ALGORITHM = '"%s" is not a valid algorithm.\n  Supported algorithms are:\n  "HS256", "HS384", "HS512", "RS256", "RS384", "RS512", "PS256", "PS384", "PS512", "ES256", "ES384", "ES512" and "none".'
 var MSG_INVALID_SECRET = 'secret must be a string or buffer';
