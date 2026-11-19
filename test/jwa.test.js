@@ -127,6 +127,16 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
     t.end();
   });
 
+  test('RSA-PSS with passphrase signing, verifying', function (t) {
+    const input = 'test input';
+    BIT_DEPTHS.forEach(function (bits) {
+      const algo = jwa('PS'+bits);
+      const sig = algo.sign(input, {key: rsaPrivateKeyWithPassphrase, passphrase: 'test_pass'});
+      t.ok(algo.verify(input, sig, rsaPublicKeyWithPassphrase), 'should verify');
+    });
+    t.end();
+  });
+
   if (SUPPORTS_KEY_OBJECTS) {
     BIT_DEPTHS.forEach(function (bits) {
       test('PS'+bits+': signing, verifying (KeyObject)', function (t) {
@@ -135,6 +145,20 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
         const sig = algo.sign(input, crypto.createPrivateKey(rsaPrivateKey));
         t.ok(algo.verify(input, sig, crypto.createPublicKey(rsaPublicKey)), 'should verify');
         t.notOk(algo.verify(input, sig, crypto.createPublicKey(rsaWrongPublicKey)), 'should not verify');
+        t.end();
+      });
+    });
+  }
+
+  if (crypto.webcrypto && typeof crypto.KeyObject.prototype.toCryptoKey === 'function') {
+    BIT_DEPTHS.forEach(function (bits) {
+      test('PS'+bits+': signing, verifying (CryptoKey)', function (t) {
+        const input = 'h. jon benjamin';
+        const algo = jwa('PS'+bits);
+        const privateKey = crypto.createPrivateKey(rsaPrivateKey)
+          .toCryptoKey({ name: 'RSA-PSS', hash: 'SHA-' + bits }, false, ['sign']);
+        const sig = algo.sign(input, privateKey);
+        t.ok(algo.verify(input, sig, crypto.createPublicKey(rsaPublicKey)), 'should verify');
         t.end();
       });
     });
