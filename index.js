@@ -9,6 +9,7 @@ var MSG_INVALID_VERIFIER_KEY = 'key must be a string or a buffer';
 var MSG_INVALID_SIGNER_KEY = 'key must be a string, a buffer or an object';
 
 var supportsKeyObjects = typeof crypto.createPublicKey === 'function';
+var supportsOneShotSign = typeof crypto.sign === 'function';
 if (supportsKeyObjects) {
   MSG_INVALID_VERIFIER_KEY += ' or a KeyObject';
   MSG_INVALID_SECRET += 'or a KeyObject';
@@ -179,16 +180,30 @@ function createKeyVerifier(bits) {
   }
 }
 
+// A plain { key, ... } object. Buffers, KeyObjects and CryptoKeys have no
+// `key` property and are passed as the key itself.
+function isKeyOptions(key) {
+  return typeof key === 'object' && key !== null && 'key' in key;
+}
+
 function createPSSKeySigner(bits) {
   return function sign(thing, privateKey) {
     checkIsPrivateKey(privateKey);
     thing = normalizeInput(thing);
-    var signer = crypto.createSign('RSA-SHA' + bits);
-    var sig = (signer.update(thing), signer.sign({
-      key: privateKey,
-      padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
-      saltLength: crypto.constants.RSA_PSS_SALTLEN_DIGEST
-    }, 'base64'));
+    // A { key, passphrase } object is spread into the options, as crypto
+    // does not accept it nested under `key`.
+    var options = isKeyOptions(privateKey) ? Object.assign({}, privateKey) : { key: privateKey };
+    options.padding = crypto.constants.RSA_PKCS1_PSS_PADDING;
+    options.saltLength = crypto.constants.RSA_PSS_SALTLEN_DIGEST;
+    var sig;
+    if (supportsOneShotSign) {
+      // One-shot signing: the OpenSSL FIPS provider rejects PSS through
+      // createSign().sign(), which signs a precomputed digest.
+      sig = crypto.sign('sha' + bits, Buffer.from(thing), options).toString('base64');
+    } else {
+      var signer = crypto.createSign('RSA-SHA' + bits);
+      sig = (signer.update(thing), signer.sign(options, 'base64'));
+    }
     return fromBase64(sig);
   }
 }
