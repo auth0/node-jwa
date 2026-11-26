@@ -149,6 +149,20 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
       });
     });
   }
+
+  if (crypto.webcrypto && typeof crypto.KeyObject.prototype.toCryptoKey === 'function') {
+    BIT_DEPTHS.forEach(function (bits) {
+      test('PS'+bits+': signing, verifying (CryptoKey)', function (t) {
+        const input = 'h. jon benjamin';
+        const algo = jwa('PS'+bits);
+        const privateKey = crypto.createPrivateKey(rsaPrivateKey)
+          .toCryptoKey({ name: 'RSA-PSS', hash: 'SHA-' + bits }, false, ['sign']);
+        const sig = algo.sign(input, privateKey);
+        t.ok(algo.verify(input, sig, crypto.createPublicKey(rsaPublicKey)), 'should verify');
+        t.end();
+      });
+    });
+  }
 }
 
 

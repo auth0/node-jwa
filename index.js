@@ -180,9 +180,10 @@ function createKeyVerifier(bits) {
   }
 }
 
+// A plain { key, ... } object. Buffers, KeyObjects and CryptoKeys have no
+// `key` property and are passed as the key itself.
 function isKeyOptions(key) {
-  return typeof key === 'object' && !Buffer.isBuffer(key) &&
-    !(supportsKeyObjects && key instanceof crypto.KeyObject);
+  return typeof key === 'object' && key !== null && 'key' in key;
 }
 
 function createPSSKeySigner(bits) {
