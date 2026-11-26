@@ -127,6 +127,16 @@ if (semver.satisfies(nodeVersion, '^6.12.0 || >=8.0.0')) {
     t.end();
   });
 
+  test('RSA-PSS with passphrase signing, verifying', function (t) {
+    const input = 'test input';
+    BIT_DEPTHS.forEach(function (bits) {
+      const algo = jwa('PS'+bits);
+      const sig = algo.sign(input, {key: rsaPrivateKeyWithPassphrase, passphrase: 'test_pass'});
+      t.ok(algo.verify(input, sig, rsaPublicKeyWithPassphrase), 'should verify');
+    });
+    t.end();
+  });
+
   if (SUPPORTS_KEY_OBJECTS) {
     BIT_DEPTHS.forEach(function (bits) {
       test('PS'+bits+': signing, verifying (KeyObject)', function (t) {
